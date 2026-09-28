@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "card_padding",
+      "category": "spacing",
+      "severity": "major",
+      "desc": "Payment card padding 24px -> 12px",
+      "bbox": [
+        40,
+        182,
+        581,
+        428
+      ]
+    },
+    {
+      "id": "secondary_style",
+      "category": "component",
+      "severity": "major",
+      "desc": "Secondary 'Back' button rendered with primary (filled) style",
+      "bbox": [
+        670,
+        499,
+        78,
+        48
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

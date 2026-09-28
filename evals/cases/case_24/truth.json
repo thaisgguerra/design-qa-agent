@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "missing_badge",
+      "category": "missing_element",
+      "severity": "major",
+      "desc": "'MOST POPULAR' badge missing",
+      "bbox": [
+        670,
+        244,
+        127,
+        22
+      ]
+    },
+    {
+      "id": "logo_color",
+      "category": "color",
+      "severity": "major",
+      "desc": "Logo color blue -> purple",
+      "bbox": [
+        40,
+        22,
+        85,
+        24
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

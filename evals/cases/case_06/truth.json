@@ -1,0 +1,18 @@
+{
+  "bugs": [
+    {
+      "id": "label_color",
+      "category": "color",
+      "severity": "minor",
+      "desc": "Field labels too light (#4B5563 -> #B0B7C3)",
+      "bbox": [
+        65,
+        244,
+        531,
+        15
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

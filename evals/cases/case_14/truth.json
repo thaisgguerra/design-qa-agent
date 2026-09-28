@@ -1,0 +1,18 @@
+{
+  "bugs": [
+    {
+      "id": "extra_divider",
+      "category": "extra_element",
+      "severity": "minor",
+      "desc": "Extra dashed divider above security note",
+      "bbox": [
+        670,
+        559,
+        365,
+        27
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

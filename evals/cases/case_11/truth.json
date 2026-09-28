@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "missing_badge",
+      "category": "missing_element",
+      "severity": "major",
+      "desc": "'MOST POPULAR' badge missing",
+      "bbox": [
+        670,
+        244,
+        127,
+        22
+      ]
+    },
+    {
+      "id": "extra_divider",
+      "category": "extra_element",
+      "severity": "minor",
+      "desc": "Extra dashed divider above security note",
+      "bbox": [
+        670,
+        559,
+        365,
+        27
+      ]
+    },
+    {
+      "id": "cta_copy",
+      "category": "content",
+      "severity": "major",
+      "desc": "CTA label 'Pay now' -> 'Submit'",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "cta_color",
+      "category": "color",
+      "severity": "critical",
+      "desc": "Primary CTA blue #2563EB -> #3B82F6",
+      "bbox": [
+        760,
+        491,
+        275,
+        56
+      ]
+    },
+    {
+      "id": "title_size",
+      "category": "typography",
+      "severity": "major",
+      "desc": "Page title 28px -> 22px",
+      "bbox": [
+        40,
+        101,
+        1020,
+        33
+      ]
+    },
+    {
+      "id": "total_align",
+      "category": "layout",
+      "severity": "major",
+      "desc": "Total amount not right-aligned",
+      "bbox": [
+        670,
+        446,
+        365,
+        29
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

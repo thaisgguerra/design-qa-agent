@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "card_padding",
+      "category": "spacing",
+      "severity": "major",
+      "desc": "Payment card padding 24px -> 12px",
+      "bbox": [
+        40,
+        182,
+        581,
+        428
+      ]
+    },
+    {
+      "id": "logo_color",
+      "category": "color",
+      "severity": "major",
+      "desc": "Logo color blue -> purple",
+      "bbox": [
+        40,
+        22,
+        85,
+        24
+      ]
+    },
+    {
+      "id": "secondary_style",
+      "category": "component",
+      "severity": "major",
+      "desc": "Secondary 'Back' button rendered with primary (filled) style",
+      "bbox": [
+        670,
+        499,
+        78,
+        48
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

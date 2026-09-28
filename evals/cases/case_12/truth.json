@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "missing_badge",
+      "category": "missing_element",
+      "severity": "major",
+      "desc": "'MOST POPULAR' badge missing",
+      "bbox": [
+        670,
+        244,
+        127,
+        22
+      ]
+    },
+    {
+      "id": "tabs_gap",
+      "category": "spacing",
+      "severity": "minor",
+      "desc": "Nav tab gap 24px -> 10px",
+      "bbox": [
+        426,
+        25,
+        297,
+        18
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

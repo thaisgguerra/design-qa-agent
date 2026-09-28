@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "DejaVu Sans", Arial, sans-serif; background: #F3F4F6; color: #111827; }
+  header { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; background: #FFFFFF; border-bottom: 1px solid #E5E7EB; }
+  .logo { font-weight: 700; font-size: 20px; color: #2563EB; }
+  .tabs { display: flex; gap: 24px; }
+  .tabs a { color: #4B5563; text-decoration: none; font-size: 15px; }
+  .tabs a.active { color: #111827; font-weight: 700; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; background: #C7D2FE; }
+  main { display: grid; grid-template-columns: 1.4fr 1fr; gap: 24px; padding: 32px 40px; }
+  h1 { grid-column: 1 / -1; margin: 0; font-size: 28px; font-weight: 700; }
+  .meta { grid-column: 1 / -1; margin: -16px 0 0; color: #6B7280; font-size: 13px; }
+  .card { background: #FFFFFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 24px; }
+  .card h2 { margin: 0 0 16px; font-size: 18px; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; color: #4B5563; margin-bottom: 6px; font-weight: 600; }
+  .field input { width: 100%; height: 42px; border: 1px solid #D1D5DB; border-radius: 8px; padding: 0 12px; font-size: 15px; background: #FFFFFF; }
+  .row { display: flex; gap: 16px; } .row .field { flex: 1; }
+  .plan { display: flex; gap: 12px; align-items: flex-start; }
+  .badge { display: inline-block; background: #DCFCE7; color: #166534; font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .plan-desc { color: #4B5563; font-size: 14px; line-height: 1.6; margin: 8px 0 0; }
+  .summary { margin-top: 20px; border-top: 1px solid #E5E7EB; padding-top: 16px; }
+  .line { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 8px; color: #374151; }
+  .total { display: flex; justify-content: space-between; font-size: 18px; font-weight: 700; margin-top: 12px; }
+  .actions { display: flex; gap: 12px; margin-top: 24px; }
+  .btn-primary { flex: 1; height: 48px; border: 0; border-radius: 10px; background: #2563EB; color: #FFFFFF; font-size: 16px; font-weight: 700; }
+  .btn-secondary { height: 48px; padding: 0 20px; border: 1px solid #D1D5DB; border-radius: 10px; background: #FFFFFF; color: #111827; font-size: 16px; }
+  .secure { margin-top: 12px; font-size: 12px; color: #6B7280; text-align: center; }
+</style></head>
+<body>
+<header>
+  <div class="logo">Nimbus</div>
+  <nav class="tabs"><a href="#">Overview</a><a class="active" href="#">Billing</a><a href="#">Team</a><a href="#">Settings</a></nav>
+  <div class="avatar"></div>
+</header>
+<main>
+  <h1>Upgrade your plan</h1>
+  <p class="meta">Last updated <span id="ts">Sep 28, 2026 at 10:42</span></p>
+  <section class="card" id="payment">
+    <h2>Payment details</h2>
+    <div class="field"><label>Name on card</label><input value="Ana Souza"></div>
+    <div class="field"><label>Card number</label><input value="4242 4242 4242 4242"></div>
+    <div class="row">
+      <div class="field"><label>Expiry</label><input value="08 / 29"></div>
+      <div class="field"><label>CVC</label><input value="123"></div>
+    </div>
+    <div class="field"><label>Billing email</label><input value="ana@nimbus.dev"></div>
+  </section>
+  <section class="card" id="order">
+    <h2>Order summary</h2>
+    <div class="plan"><div><span class="badge">MOST POPULAR</span>
+      <p class="plan-desc">Pro plan, billed yearly. Unlimited projects, priority support and advanced analytics for up to 10 teammates.</p></div></div>
+    <div class="summary">
+      <div class="line"><span>Pro plan (yearly)</span><span>$240.00</span></div>
+      <div class="line"><span>Discount</span><span>-$24.00</span></div>
+      <div class="line"><span>Tax</span><span>$17.28</span></div>
+      <div class="total"><span>Total</span><span>$233.28</span></div>
+    </div>
+    <div class="actions"><button class="btn-secondary">Back</button><button class="btn-primary" id="pay">Pay now</button></div>
+    <p class="secure">Payments are encrypted and processed securely.</p>
+  </section>
+</main>
+</body></html>

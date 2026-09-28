@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "cta_copy",
+      "category": "content",
+      "severity": "major",
+      "desc": "CTA label 'Pay now' -> 'Submit'",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ]
+    },
+    {
+      "id": "total_align",
+      "category": "layout",
+      "severity": "major",
+      "desc": "Total amount not right-aligned",
+      "bbox": [
+        670,
+        454,
+        365,
+        21
+      ]
+    },
+    {
+      "id": "tabs_gap",
+      "category": "spacing",
+      "severity": "minor",
+      "desc": "Nav tab gap 24px -> 10px",
+      "bbox": [
+        426,
+        25,
+        297,
+        18
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

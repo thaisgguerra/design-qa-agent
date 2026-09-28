@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "title_weight",
+      "category": "typography",
+      "severity": "major",
+      "desc": "Page title weight 700 -> 400",
+      "bbox": [
+        40,
+        101,
+        1020,
+        33
+      ]
+    },
+    {
+      "id": "label_color",
+      "category": "color",
+      "severity": "minor",
+      "desc": "Field labels too light (#4B5563 -> #B0B7C3)",
+      "bbox": [
+        65,
+        244,
+        531,
+        15
+      ]
+    },
+    {
+      "id": "cta_copy",
+      "category": "content",
+      "severity": "major",
+      "desc": "CTA label 'Pay now' -> 'Submit'",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

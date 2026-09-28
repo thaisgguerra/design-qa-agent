@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "title_weight",
+      "category": "typography",
+      "severity": "major",
+      "desc": "Page title weight 700 -> 400",
+      "bbox": [
+        40,
+        101,
+        1020,
+        33
+      ]
+    },
+    {
+      "id": "missing_badge",
+      "category": "missing_element",
+      "severity": "major",
+      "desc": "'MOST POPULAR' badge missing",
+      "bbox": [
+        670,
+        244,
+        127,
+        22
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

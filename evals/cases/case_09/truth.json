@@ -1,0 +1,18 @@
+{
+  "bugs": [
+    {
+      "id": "secondary_style",
+      "category": "component",
+      "severity": "major",
+      "desc": "Secondary 'Back' button rendered with primary (filled) style",
+      "bbox": [
+        670,
+        499,
+        78,
+        48
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "field_gap",
+      "category": "spacing",
+      "severity": "minor",
+      "desc": "Gap between card fields 16px -> 4px",
+      "bbox": [
+        65,
+        311,
+        531,
+        75
+      ]
+    },
+    {
+      "id": "tabs_gap",
+      "category": "spacing",
+      "severity": "minor",
+      "desc": "Nav tab gap 24px -> 10px",
+      "bbox": [
+        426,
+        25,
+        297,
+        18
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

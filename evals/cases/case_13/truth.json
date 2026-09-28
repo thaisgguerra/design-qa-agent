@@ -1,0 +1,30 @@
+{
+  "bugs": [
+    {
+      "id": "cta_color",
+      "category": "color",
+      "severity": "critical",
+      "desc": "Primary CTA blue #2563EB -> #3B82F6",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ]
+    },
+    {
+      "id": "card_padding",
+      "category": "spacing",
+      "severity": "major",
+      "desc": "Payment card padding 24px -> 12px",
+      "bbox": [
+        40,
+        182,
+        581,
+        428
+      ]
+    }
+  ],
+  "dynamic_timestamp": false,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}
