@@ -3,42 +3,57 @@
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const t = I18N.t;
+const msg = I18N.msg;
 
 const COLORS = { green: "#4BD398", pool: "#20C8C8", yellow: "#E9E55A", pink: "#FB7082" };
-const SEV_LABEL = { critico: "Crítico", importante: "Importante", ajuste: "Ajuste" };
-const CAT_LABEL = { logo: "Logo", cores: "Cores", tipografia: "Tipografia", composicao: "Composição", elementos: "Elementos gráficos", linguagem: "Tom de voz" };
-const LOADING_MSGS = [
-  "Lendo o manual de marca…", "Separando a paleta oficial…", "Medindo as cores da arte…",
-  "Conferindo o respiro do logo…", "Checando as fontes…", "Olhando a composição…", "Escrevendo o feedback…",
-];
 
 let serverConfig = { mode: "ai", figma: true };
 let lastResult = null;
 
 function band(score) {
-  if (score >= 90) return { label: "Na mosca!", color: COLORS.green, title: "Essa arte está com a cara da marca." };
-  if (score >= 75) return { label: "Quase lá", color: COLORS.pool, title: "Bem alinhada, com alguns ajustes." };
-  if (score >= 50) return { label: "Precisa de ajustes", color: COLORS.yellow, title: "Tem desvios que o cliente vai notar." };
-  return { label: "Fora da marca", color: COLORS.pink, title: "A arte se afastou bastante do manual." };
+  const i = score >= 90 ? 0 : score >= 75 ? 1 : score >= 50 ? 2 : 3;
+  const [label, title] = t("band")[i];
+  return { label, title, color: [COLORS.green, COLORS.pool, COLORS.yellow, COLORS.pink][i] };
 }
+
+/* ------------------------------------------------ language */
+function applyLanguage() {
+  I18N.apply();
+  document.title = t("title");
+  const btn = $("#lang-btn");
+  btn.textContent = t("lang_toggle");
+  btn.setAttribute("aria-label", t("lang_toggle_label"));
+  renderBanner();
+  $$(".drop.has-file").forEach((d) => d.showFile && d.showFile());
+  if (lastResult && !$("#result").hidden) render(lastResult, false);
+}
+$("#lang-btn").addEventListener("click", () => {
+  I18N.setLang(I18N.lang === "pt" ? "en" : "pt");
+  applyLanguage();
+});
 
 /* ------------------------------------------------ setup */
 // With the Python server (web/app.py) the page uses its API. Without it (GitHub Pages) there is no
-// /api, so the free mode runs right here in the browser with engine.js.
+// /api, so the measured check runs right here in the browser with engine.js.
 let browserMode = false;
+let showBanner = false;
 
-function freeBanner(extra = "") {
+function renderBanner() {
+  if (!showBanner) return;
   const b = $("#setup-warning");
   b.classList.add("info");
-  b.innerHTML = "<strong>Como funciona:</strong> a comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF." + extra;
+  b.innerHTML = t("banner_how") + (browserMode ? "<br>" + t("banner_browser") : "");
   b.hidden = false;
-  $("#loading-hint").textContent = "Leva só alguns segundos.";
+  $("#loading-hint").textContent = t("loading_fast");
+  $("#loading-hint").removeAttribute("data-i18n");
 }
 
 function enterBrowserMode() {
   browserMode = true;
+  showBanner = true;
   serverConfig = { mode: "browser", figma: false };
-  freeBanner(" <br>Tudo roda no seu navegador: os arquivos não saem do seu computador. Aqui só dá para enviar arquivos, não links.");
+  renderBanner();
   $$(".input-card").forEach((card) => {
     $(".seg", card).hidden = true;
     card.dataset.mode = "file";
@@ -53,20 +68,20 @@ fetch("api/config").then((r) => {
   return r.json();
 }).then((c) => {
   serverConfig = c;
-  if (c.mode === "free") freeBanner();
+  if (c.mode === "free") { showBanner = true; renderBanner(); }
 }).catch(enterBrowserMode);
 
 /* ------------------------------------------------ input cards */
 function linkKind(url) {
   const u = url.trim().toLowerCase();
   if (!u) return null;
-  if (u.includes("figma.com/")) return { label: "Figma", warn: !serverConfig.figma && "precisa de token do Figma no servidor" };
+  if (u.includes("figma.com/")) return { label: "Figma", warn: !serverConfig.figma && t("chip_figma_token") };
   if (u.includes("drive.google.com") || u.includes("docs.google.com")) {
-    if (u.includes("/folders/")) return { label: "Pasta do Drive", warn: "use o link do arquivo, não da pasta" };
+    if (u.includes("/folders/")) return { label: t("chip_folder"), warn: t("chip_folder_warn") };
     return { label: "Google Drive" };
   }
-  if (/^https?:\/\/\S+\.\S+/.test(u) || /^\S+\.\S+\/\S*/.test(u)) return { label: "Link direto" };
-  return { label: "Isso não parece um link", warn: true };
+  if (/^https?:\/\/\S+\.\S+/.test(u) || /^\S+\.\S+\/\S*/.test(u)) return { label: t("chip_direct") };
+  return { label: t("chip_not_link"), warn: true };
 }
 
 $$(".input-card").forEach((card) => {
@@ -87,16 +102,16 @@ $$(".input-card").forEach((card) => {
     chips.innerHTML = k ? `<span class="chip ${k.warn ? "warn" : ""}">${esc(k.label)}${typeof k.warn === "string" ? ` · ${esc(k.warn)}` : ""}</span>` : "";
   });
 
-  const showFile = () => {
+  drop.showFile = () => {
     const f = file.files[0];
     if (!f) return;
     drop.classList.add("has-file");
     const size = f.size > 1e6 ? `${(f.size / 1e6).toFixed(1)} MB` : `${Math.round(f.size / 1e3)} KB`;
     const thumb = f.type.startsWith("image/") ? `<img class="drop-thumb" alt="" src="${URL.createObjectURL(f)}">` : "";
     [...drop.childNodes].forEach((n) => { if (n !== file) n.remove(); });
-    drop.insertAdjacentHTML("beforeend", `${thumb}<span class="drop-text"><strong>${esc(f.name)}</strong></span><span class="drop-hint">${size} · clique para trocar</span>`);
+    drop.insertAdjacentHTML("beforeend", `${thumb}<span class="drop-text"><strong>${esc(f.name)}</strong></span><span class="drop-hint">${size} · ${esc(t("drop_change"))}</span>`);
   };
-  file.addEventListener("change", showFile);
+  file.addEventListener("change", drop.showFile);
   ["dragenter", "dragover"].forEach((e) => drop.addEventListener(e, () => drop.classList.add("is-over")));
   ["dragleave", "drop"].forEach((e) => drop.addEventListener(e, () => drop.classList.remove("is-over")));
 });
@@ -106,8 +121,8 @@ const form = $("#form");
 const errorBox = $("#form-error");
 let loadingTimer = null;
 
-function showError(msg) {
-  errorBox.textContent = msg;
+function showError(text) {
+  errorBox.textContent = text;
   errorBox.hidden = false;
   errorBox.scrollIntoView({ behavior: "smooth", block: "center" });
 }
@@ -128,19 +143,19 @@ form.addEventListener("submit", async (e) => {
   errorBox.hidden = true;
   const art = slotData("art");
   const brand = slotData("brand");
-  if (!art) return showError("Falta a arte: cole um link ou escolha um arquivo no passo 1.");
-  if (!brand) return showError("Falta o manual de marca: cole um link ou escolha um arquivo no passo 2.");
+  if (!art) return showError(t("err_no_art"));
+  if (!brand) return showError(t("err_no_brand"));
 
   if (browserMode) {
     setLoading(true, true);
     try {
-      const data = await BrandEngine.check(art.file, brand.file, (msg) => { $("#loading-msg").textContent = msg; });
+      const data = await BrandEngine.check(art.file, brand.file, (m) => { $("#loading-msg").textContent = msg(m); });
       setLoading(false);
       render(data);
     } catch (err) {
       console.error(err);
       setLoading(false);
-      showError(err.message || "Não foi possível analisar.");
+      showError(err.message || t("err_generic"));
     }
     return;
   }
@@ -153,13 +168,13 @@ form.addEventListener("submit", async (e) => {
   setLoading(true);
   try {
     const res = await fetch("api/analyze", { method: "POST", body: fd });
-    const data = await res.json().catch(() => ({ error: `O servidor respondeu com erro ${res.status}.` }));
-    if (!res.ok || data.error) throw new Error(data.error || "Não foi possível analisar.");
+    const data = await res.json().catch(() => ({ error: t("err_status", { status: res.status }) }));
+    if (!res.ok || data.error) throw new Error(data.error || t("err_generic"));
     setLoading(false);
     render(data);
   } catch (err) {
     setLoading(false);
-    showError(err.message === "Failed to fetch" ? "Não consegui falar com o servidor. Ele está rodando?" : err.message);
+    showError(err.message === "Failed to fetch" ? t("err_server") : err.message);
   }
 });
 
@@ -169,16 +184,16 @@ function setLoading(on, manualMessages = false) {
   $("#result").hidden = true;
   clearInterval(loadingTimer);
   if (on && manualMessages) {  // the browser engine reports its own steps
-    $("#loading-msg").textContent = "Preparando…";
+    $("#loading-msg").textContent = t("preparing");
     window.scrollTo({ top: 0, behavior: "smooth" });
   } else if (on) {
     let i = 0;
-    const msg = $("#loading-msg");
-    msg.textContent = LOADING_MSGS[0];
+    const el = $("#loading-msg");
+    el.textContent = t("loading_msgs")[0];
     loadingTimer = setInterval(() => {
-      i = Math.min(i + 1, LOADING_MSGS.length - 1);
-      msg.style.opacity = 0;
-      setTimeout(() => { msg.textContent = LOADING_MSGS[i]; msg.style.opacity = 1; }, 250);
+      i = Math.min(i + 1, t("loading_msgs").length - 1);
+      el.style.opacity = 0;
+      setTimeout(() => { el.textContent = t("loading_msgs")[i]; el.style.opacity = 1; }, 250);
     }, 5000);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
@@ -191,23 +206,26 @@ function ring(score, color, na) {
     <b>${na ? "–" : score}</b></div>`;
 }
 
+const sevLabel = (s) => t("sev")[s] || s;
+const catLabel = (c) => t("cat")[c] || c;
+
 function findingCard(f) {
   return `<article class="card finding ${esc(f.severity)}">
     <div class="finding-top">
-      <span class="sev ${esc(f.severity)}">${esc(SEV_LABEL[f.severity] || f.severity)}</span>
-      <h4>${esc(f.title)}</h4>
-      <span class="pill">${esc(CAT_LABEL[f.category] || f.category)}</span>
-      ${lastResult.art.previews.length > 1 ? `<span class="pill">Imagem ${f.art_index}</span>` : ""}
+      <span class="sev ${esc(f.severity)}">${esc(sevLabel(f.severity))}</span>
+      <h4>${esc(msg(f.title))}</h4>
+      <span class="pill">${esc(catLabel(f.category))}</span>
+      ${lastResult.art.previews.length > 1 ? `<span class="pill">${esc(t("image_n", { n: f.art_index }))}</span>` : ""}
     </div>
     <div class="fgrid">
-      <div><b>O manual diz</b>${esc(f.guideline)}</div>
-      <div><b>Na arte</b>${esc(f.observed)}</div>
-      <div class="fix"><b>Como ajustar</b>${esc(f.suggestion)}</div>
+      <div><b>${esc(t("f_manual"))}</b>${esc(msg(f.guideline))}</div>
+      <div><b>${esc(t("f_art"))}</b>${esc(msg(f.observed))}</div>
+      <div class="fix"><b>${esc(t("f_fix"))}</b>${esc(msg(f.suggestion))}</div>
     </div>
   </article>`;
 }
 
-function render(r) {
+function render(r, animate = true) {
   lastResult = r;
   const score = r.score ?? 0;
   const b = band(score);
@@ -215,51 +233,56 @@ function render(r) {
   $("#verdict").textContent = b.label;
   $("#verdict").style.background = b.color;
   $("#score-label").textContent = b.title;
-  $("#summary").textContent = r.summary;
+  $("#summary").textContent = msg(r.summary);
   $("#meta-row").innerHTML = [
-    r.brand_name && `Marca: ${esc(r.brand_name)}`,
-    `Arte: ${esc(r.art.name)}`,
-    r.palette.adherence != null && `Paleta medida: ${r.palette.adherence}% nas cores oficiais`,
-  ].filter(Boolean).map((t) => `<span class="meta">${t}</span>`).join("");
+    r.brand_name && t("meta_brand", { v: r.brand_name }),
+    t("meta_art", { v: r.art.name }),
+    r.palette.adherence != null && t("meta_palette", { v: r.palette.adherence }),
+  ].filter(Boolean).map((x) => `<span class="meta">${esc(x)}</span>`).join("");
 
   $("#previews").innerHTML = r.art.previews.map((src, i) =>
-    `<figure class="preview" style="margin:0"><img src="${src}" alt="Imagem ${i + 1} da arte">${r.art.previews.length > 1 ? `<span>${i + 1}</span>` : ""}</figure>`).join("");
+    `<figure class="preview" style="margin:0"><img src="${src}" alt="${esc(t("preview_alt", { n: i + 1 }))}">${r.art.previews.length > 1 ? `<span>${i + 1}</span>` : ""}</figure>`).join("");
 
   $("#cats").innerHTML = r.categories.map((c) => {
     const col = c.applicable ? band(c.score).color : "#CFCFCA";
     return `<div class="card cat ${c.applicable ? "" : "na"}">${ring(c.score, col, !c.applicable)}
-      <div><h4>${esc(c.label)}</h4><p>${esc(c.applicable ? c.comment : `Não se aplica. ${c.comment}`)}</p></div></div>`;
+      <div><h4>${esc(catLabel(c.key))}</h4><p>${esc(c.applicable ? msg(c.comment) : `${t("na")} ${msg(c.comment)}`)}</p></div></div>`;
   }).join("");
 
   const pal = r.palette;
   $("#palette").innerHTML =
-    (pal.brand.length ? `<div class="pal-label"><span>Paleta oficial</span></div><div class="swatches">${pal.brand.map((p) =>
+    (pal.brand.length ? `<div class="pal-label"><span>${esc(t("pal_official"))}</span></div><div class="swatches">${pal.brand.map((p) =>
       `<div class="sw"><i style="background:${esc(p.hex)}"></i><small>${esc(p.name)}<br>${esc(p.hex)}</small></div>`).join("")}</div>`
-      : `<p class="muted small" style="margin-top:12px">O manual não traz códigos de cor.</p>`) +
-    `<div class="pal-label"><span>Cores medidas na arte</span>${pal.adherence != null ? `<span>${pal.adherence}% na paleta</span>` : ""}</div>
+      : `<p class="muted small" style="margin-top:12px">${esc(t("pal_no_codes"))}</p>`) +
+    `<div class="pal-label"><span>${esc(t("pal_measured"))}</span>${pal.adherence != null ? `<span>${esc(t("pal_in", { v: pal.adherence }))}</span>` : ""}</div>
      <div class="art-colors">${pal.art.map((c) => `<div class="ac"><i style="background:${esc(c.hex)}"></i><span>${esc(c.hex)}</span>
        <span class="bar"><span style="width:${Math.max(3, c.share * 100)}%;background:${esc(c.hex)}"></span></span>
-       ${c.nearest ? `<span class="tag ${c.match ? "ok" : "off"}" title="Diferença ΔE ${c.delta_e}">${c.match ? `✓ ${esc(c.nearest)}` : "fora da paleta"}</span>` : ""}
+       ${c.nearest ? `<span class="tag ${c.match ? "ok" : "off"}" title="${esc(t("pal_delta", { v: c.delta_e }))}">${c.match ? `✓ ${esc(c.nearest)}` : esc(t("pal_off"))}</span>` : ""}
      </div>`).join("")}</div>`;
 
   $("#strengths").innerHTML = r.strengths.length
-    ? r.strengths.map((s) => `<li>${esc(s)}</li>`).join("")
-    : `<li class="none">Nada bateu com o manual nos critérios medidos.</li>`;
+    ? r.strengths.map((s) => `<li>${esc(msg(s))}</li>`).join("")
+    : `<li class="none">${esc(t("strengths_none"))}</li>`;
 
   $("#findings-count").textContent = r.findings.length;
   $("#findings").innerHTML = r.findings.length
     ? r.findings.map(findingCard).join("")
-    : `<div class="card empty">Nenhum desvio encontrado. Pode mandar para o cliente! 🎉</div>`;
+    : `<div class="card empty">${esc(t("findings_none"))}</div>`;
   $("#review").hidden = !r.to_review.length;
   $("#review-list").innerHTML = r.to_review.map(findingCard).join("");
 
   form.hidden = true;
   $("#result").hidden = false;
-  window.scrollTo({ top: 0, behavior: "smooth" });
 
-  // animate
   const donut = $("#donut-value");
   donut.style.stroke = b.color;
+  if (!animate) {  // language switch: redraw in place, no replay
+    donut.style.strokeDasharray = `${(score / 100) * 502.65} 503`;
+    $$(".ring .v").forEach((v) => { v.style.strokeDasharray = `${(v.dataset.pct / 100) * 175.9} 176`; });
+    $("#score-num").textContent = score;
+    return;
+  }
+  window.scrollTo({ top: 0, behavior: "smooth" });
   donut.style.strokeDasharray = "0 503";
   requestAnimationFrame(() => requestAnimationFrame(() => {
     donut.style.strokeDasharray = `${(score / 100) * 502.65} 503`;
@@ -271,8 +294,8 @@ function render(r) {
 
 function countUp(el, to) {
   const start = performance.now(), dur = 1400;
-  const step = (t) => {
-    const p = Math.min(1, (t - start) / dur);
+  const step = (now) => {
+    const p = Math.min(1, (now - start) / dur);
     el.textContent = Math.round(to * (1 - Math.pow(1 - p, 3)));
     if (p < 1) requestAnimationFrame(step);
   };
@@ -316,21 +339,25 @@ $("#copy").addEventListener("click", async () => {
   const r = lastResult;
   if (!r) return;
   const lines = [
-    `# Brand Check: ${r.score}% na marca (${band(r.score).label})`,
-    r.brand_name && `Marca: ${r.brand_name} · Arte: ${r.art.name}`, "", r.summary, "",
-    "## Nota por critério",
-    ...r.categories.map((c) => `- ${c.label}: ${c.applicable ? `${c.score}%` : "não se aplica"} (${c.comment})`),
-    "", "## O que ajustar",
-    ...(r.findings.length ? r.findings.map((f) =>
-      `- [${SEV_LABEL[f.severity]}] ${f.title}\n  - Manual: ${f.guideline}\n  - Arte: ${f.observed}\n  - Ajuste: ${f.suggestion}`) : ["- Nada a ajustar."]),
-    "", "## Pontos fortes", ...r.strengths.map((s) => `- ${s}`),
+    t("rep_title", { score: r.score, band: band(r.score).label }),
+    r.brand_name && t("rep_meta", { brand: r.brand_name, art: r.art.name }), "", msg(r.summary), "",
+    t("rep_cats"),
+    ...r.categories.map((c) => `- ${catLabel(c.key)}: ${c.applicable ? `${c.score}%` : t("rep_na")} (${msg(c.comment)})`),
+    "", t("rep_fix"),
+    ...(r.findings.length ? r.findings.map((f) => t("rep_line", {
+      sev: sevLabel(f.severity), title: msg(f.title), g: msg(f.guideline), o: msg(f.observed), s: msg(f.suggestion),
+    })) : [t("rep_none")]),
+    "", t("rep_strengths"), ...r.strengths.map((s) => `- ${msg(s)}`),
   ].filter((l) => l !== false && l !== undefined && l !== "");
   const text = lines.join("\n").replace(/\n## /g, "\n\n## ");
+  const btn = $("#copy");
   try {
     await navigator.clipboard.writeText(text);
-    $("#copy").textContent = "Copiado!";
+    btn.textContent = t("copied");
   } catch {
-    $("#copy").textContent = "Não deu para copiar";
+    btn.textContent = t("copy_fail");
   }
-  setTimeout(() => { $("#copy").textContent = "Copiar relatório"; }, 2000);
+  setTimeout(() => { btn.textContent = t("copy"); }, 2000);
 });
+
+applyLanguage();

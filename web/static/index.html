@@ -17,10 +17,11 @@
       <div class="brandbar">
         <img src="logo-white.png" alt="Flori Tech" class="logo">
         <span class="product-tag">Brand Check</span>
+        <button type="button" class="lang-btn" id="lang-btn" aria-label="Switch to English">EN</button>
       </div>
       <div class="hero-copy">
-        <h1>Essa arte condiz com a marca?</h1>
-        <p>Envie a arte e o manual de marca do cliente. A gente confere logo, cores e tipografia e devolve uma nota com o que ajustar.</p>
+        <h1 data-i18n="hero_title">Essa arte condiz com a marca?</h1>
+        <p data-i18n="hero_sub">Envie a arte e o manual de marca do cliente. A gente confere logo, cores e tipografia e devolve uma nota com o que ajustar.</p>
       </div>
       <div class="machines" aria-hidden="true">
         <span class="dot" style="--c:var(--green);--s:30px;left:26px;top:56px;animation-delay:-6.1s;animation-duration:6.6s"></span>
@@ -63,18 +64,18 @@
           <div class="card-head">
             <span class="step step-green">1</span>
             <div>
-              <h2>A arte</h2>
-              <p class="muted">O que foi produzido: post, banner, apresentação…</p>
+              <h2 data-i18n="art_title">A arte</h2>
+              <p class="muted" data-i18n="art_sub">O que foi produzido: post, banner, apresentação…</p>
             </div>
           </div>
           <div class="seg" role="tablist" aria-label="Como enviar a arte">
-            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true">Link</button>
-            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false">Arquivo</button>
+            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true" data-i18n="seg_link">Link</button>
+            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false" data-i18n="seg_file">Arquivo</button>
           </div>
           <div class="mode mode-link">
             <label class="field">
               <span class="sr-only">Link da arte</span>
-              <input type="url" name="art_url" placeholder="Cole o link do Figma, Google Drive ou da imagem" autocomplete="off">
+              <input type="url" name="art_url" data-i18n-placeholder="art_url_ph" placeholder="Cole o link do Figma, Google Drive ou da imagem" autocomplete="off">
             </label>
             <div class="chip-row" aria-live="polite"></div>
           </div>
@@ -84,8 +85,8 @@
               <span class="drop-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L6 21"/></svg>
               </span>
-              <span class="drop-text"><strong>Arraste a arte aqui</strong> ou clique para escolher</span>
-              <span class="drop-hint">PNG, JPG, WEBP ou PDF, até 30 MB</span>
+              <span class="drop-text" data-i18n-html="drop_art"><strong>Arraste a arte aqui</strong> ou clique para escolher</span>
+              <span class="drop-hint" data-i18n="drop_art_hint">PNG, JPG, WEBP ou PDF, até 30 MB</span>
             </label>
           </div>
         </section>
@@ -94,18 +95,18 @@
           <div class="card-head">
             <span class="step step-pink">2</span>
             <div>
-              <h2>O manual de marca</h2>
-              <p class="muted">A identidade visual do cliente, de preferência em PDF.</p>
+              <h2 data-i18n="brand_title">O manual de marca</h2>
+              <p class="muted" data-i18n="brand_sub">A identidade visual do cliente, de preferência em PDF.</p>
             </div>
           </div>
           <div class="seg" role="tablist" aria-label="Como enviar o manual">
-            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true">Link</button>
-            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false">Arquivo</button>
+            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true" data-i18n="seg_link">Link</button>
+            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false" data-i18n="seg_file">Arquivo</button>
           </div>
           <div class="mode mode-link">
             <label class="field">
               <span class="sr-only">Link do manual de marca</span>
-              <input type="url" name="brand_url" placeholder="Cole o link do Google Drive ou do PDF" autocomplete="off">
+              <input type="url" name="brand_url" data-i18n-placeholder="brand_url_ph" placeholder="Cole o link do Google Drive ou do PDF" autocomplete="off">
             </label>
             <div class="chip-row" aria-live="polite"></div>
           </div>
@@ -115,8 +116,8 @@
               <span class="drop-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
               </span>
-              <span class="drop-text"><strong>Arraste o manual aqui</strong> ou clique para escolher</span>
-              <span class="drop-hint">PDF ou imagem, até 30 MB</span>
+              <span class="drop-text" data-i18n-html="drop_brand"><strong>Arraste o manual aqui</strong> ou clique para escolher</span>
+              <span class="drop-hint" data-i18n="drop_brand_hint">PDF ou imagem, até 30 MB</span>
             </label>
           </div>
         </section>
@@ -124,16 +125,16 @@
 
       <div class="card notes-card">
         <label class="field">
-          <span class="field-label">Contexto <span class="muted">(opcional)</span></span>
-          <input type="text" name="notes" maxlength="1000" placeholder="Ex.: post de Instagram para a campanha de lançamento, fundo escuro de propósito">
+          <span class="field-label" data-i18n-html="notes_label">Contexto <span class="muted">(opcional)</span></span>
+          <input type="text" name="notes" maxlength="1000" data-i18n-placeholder="notes_ph" placeholder="Ex.: post de Instagram para a campanha de lançamento, fundo escuro de propósito">
         </label>
         <button type="submit" class="btn-primary" id="submit">
-          Comparar com o manual
+          <span data-i18n="submit">Comparar com o manual</span>
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
       </div>
 
-      <p class="tip">
+      <p class="tip" data-i18n-html="tip">
         <strong>Dica:</strong> links do Google Drive precisam estar em <em>Compartilhar → Qualquer pessoa com o link</em>.
         No Figma, copie o link do frame (botão direito → <em>Copy link to selection</em>).
       </p>
@@ -147,7 +148,7 @@
         <circle cx="60" cy="60" r="46" class="sp sp3"/><circle cx="60" cy="60" r="46" class="sp sp4"/>
       </svg>
       <p class="loading-msg" id="loading-msg">Lendo o manual de marca…</p>
-      <p class="muted" id="loading-hint">Leva uns 30 a 60 segundos.</p>
+      <p class="muted" id="loading-hint" data-i18n="loading_slow">Leva uns 30 a 60 segundos.</p>
     </section>
 
     <!-- ============================== RESULT -->
@@ -160,7 +161,7 @@
           </svg>
           <div class="donut-center">
             <span class="donut-num"><span id="score-num">0</span><small>%</small></span>
-            <span class="donut-sub">na marca</span>
+            <span class="donut-sub" data-i18n="donut_sub">na marca</span>
           </div>
         </div>
         <div class="score-copy">
@@ -172,41 +173,42 @@
         <div class="previews" id="previews"></div>
       </div>
 
-      <h3 class="section-title">Nota por critério</h3>
+      <h3 class="section-title" data-i18n="sec_cats">Nota por critério</h3>
       <div class="cats" id="cats"></div>
 
       <div class="two-col">
         <div class="card">
-          <h3 class="card-title">Paleta</h3>
-          <p class="muted small">Cores oficiais lidas no manual e cores medidas na arte.</p>
+          <h3 class="card-title" data-i18n="palette_title">Paleta</h3>
+          <p class="muted small" data-i18n="palette_sub">Cores oficiais lidas no manual e cores medidas na arte.</p>
           <div id="palette"></div>
         </div>
         <div class="card">
-          <h3 class="card-title">O que está mandando bem</h3>
+          <h3 class="card-title" data-i18n="strengths_title">O que está mandando bem</h3>
           <ul class="strengths" id="strengths"></ul>
         </div>
       </div>
 
-      <h3 class="section-title">O que ajustar <span class="count" id="findings-count"></span></h3>
+      <h3 class="section-title"><span data-i18n="sec_findings">O que ajustar</span> <span class="count" id="findings-count"></span></h3>
       <div id="findings" class="findings"></div>
       <details id="review" class="review" hidden>
-        <summary>Pontos para revisar <span class="muted">(sem certeza, vale conferir)</span></summary>
+        <summary data-i18n-html="review_summary">Pontos para revisar <span class="muted">(sem certeza, vale conferir)</span></summary>
         <div id="review-list" class="findings"></div>
       </details>
 
       <div class="actions">
-        <button type="button" class="btn-ghost" id="copy">Copiar relatório</button>
-        <button type="button" class="btn-primary" id="again">Nova comparação</button>
+        <button type="button" class="btn-ghost" id="copy" data-i18n="copy">Copiar relatório</button>
+        <button type="button" class="btn-primary" id="again" data-i18n="again">Nova comparação</button>
       </div>
     </section>
   </main>
 
   <footer class="wrap footer">
     <img src="logo-dark.png" alt="" class="footer-logo">
-    <span>Brand Check · feito pela Flori Tech</span>
+    <span data-i18n="footer">Brand Check · Ferramenta desenvolvida para a Flori Tech</span>
   </footer>
 
   <canvas id="confetti" aria-hidden="true"></canvas>
+  <script src="i18n.js"></script>
   <script src="engine.js"></script>
   <script src="app.js"></script>
 </body>

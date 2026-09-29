@@ -29,7 +29,7 @@ jobs:
       # Pages tells browsers to cache files for 10 minutes; a version in the URLs makes every
       # deploy load fresh CSS/JS instead of an old copy.
       - name: Version asset URLs
-        run: sed -i -E "s/(styles\.css|engine\.js|app\.js)\"/\1?v=${GITHUB_SHA::7}\"/g" web/static/index.html
+        run: sed -i -E "s/(styles\.css|i18n\.js|engine\.js|app\.js)\"/\1?v=${GITHUB_SHA::7}\"/g" web/static/index.html
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/static

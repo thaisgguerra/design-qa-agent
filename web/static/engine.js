@@ -29,7 +29,7 @@ const BrandEngine = (() => {
     return loaded[src] ||= new Promise((ok, fail) => {
       const s = document.createElement("script");
       s.src = src; s.async = true; s.onload = ok;
-      s.onerror = () => fail(new Error("Não consegui carregar uma biblioteca da internet. Confira a conexão."));
+      s.onerror = () => fail(new Error(I18N.t("e_lib")));
       document.head.appendChild(s);
     });
   }
@@ -69,7 +69,7 @@ const BrandEngine = (() => {
       return await new Promise((ok, fail) => {
         const img = new Image();
         img.onload = () => ok(img);
-        img.onerror = () => fail(new Error(`“${file.name}” não é uma imagem nem um PDF. Use PNG, JPG, WEBP ou PDF.`));
+        img.onerror = () => fail(new Error(I18N.t("e_not_image", { name: file.name })));
         img.src = URL.createObjectURL(file);
       });
     }
@@ -77,7 +77,7 @@ const BrandEngine = (() => {
 
   /* ------------------------------------------------ sources */
   async function load(file) {
-    if (file.size > 30 * 1024 * 1024) throw new Error(`O arquivo “${file.name}” passa de 30 MB. Exporte uma versão mais leve.`);
+    if (file.size > 30 * 1024 * 1024) throw new Error(I18N.t("e_too_big", { name: file.name }));
     const buf = await file.arrayBuffer();
     const head = new TextDecoder().decode(new Uint8Array(buf.slice(0, 5)));
     if (head === "%PDF-") {
@@ -85,7 +85,7 @@ const BrandEngine = (() => {
       try {
         const doc = await lib.getDocument({ data: new Uint8Array(buf) }).promise;
         return { name: file.name, pdf: doc };
-      } catch { throw new Error(`Não consegui abrir o PDF “${file.name}”.`); }
+      } catch { throw new Error(I18N.t("e_pdf", { name: file.name })); }
     }
     return { name: file.name, images: [await fileToImage(file)] };
   }
@@ -285,9 +285,8 @@ const BrandEngine = (() => {
     if (prof.palette.length) prof.paletteSource = "manual";
     else {
       const pages = await asImages(src, 20, 800);
-      prof.palette = dominantColors(pages, 10).filter((c) => c.share > 0.02).map((c) => ({ name: "Cor do manual", hex: c.hex }));
+      prof.palette = dominantColors(pages, 10).filter((c) => c.share > 0.02).map((c) => ({ name: I18N.t("manual_color"), hex: c.hex }));
       prof.paletteSource = "estimada";
-      prof.notes.push("O manual não traz códigos de cor escritos; a paleta foi estimada pelas cores das páginas.");
     }
     return prof;
   }
@@ -383,6 +382,8 @@ const BrandEngine = (() => {
   }
 
   /* ------------------------------------------------ the check */
+  // Texts are message descriptors {k, p}; i18n.js turns them into Portuguese or English at render time.
+  const M = (k, p = {}) => ({ k, p });
   const finding = (title, category, severity, guideline, observed, suggestion, art_index = 1, confidence = 0.9) =>
     ({ title, category, severity, guideline, observed, suggestion, art_index, confidence });
   const frac = (v) => ({ [1 / 3]: "1/3", [1 / 2]: "1/2", [1 / 4]: "1/4", 2: "2x" })[v] || v.toFixed(2);
@@ -395,12 +396,12 @@ const BrandEngine = (() => {
 
   async function check(artFile, brandFile, progress = () => {}) {
     const t0 = performance.now();
-    progress("Lendo o manual de marca…");
+    progress(M("prog_manual"));
     const [art, brand] = [await load(artFile), await load(brandFile)];
     const prof = await readManual(brand);
-    progress("Medindo as cores da arte…");
+    progress(M("prog_colors"));
     const artImgs = await asImages(art, MAX_ART_PAGES);
-    if (!artImgs.length) throw new Error("A arte não tem nenhuma página.");
+    if (!artImgs.length) throw new Error(I18N.t("e_no_pages"));
     const cats = Object.fromEntries(CATEGORIES.map(([k]) => [k, { applicable: false, score: 0, comment: "" }]));
     const findings = [], review = [], strengths = [];
 
@@ -408,38 +409,30 @@ const BrandEngine = (() => {
     const colors = dominantColors(artImgs);
     const pal = paletteCheck(colors, prof.palette);
     if (pal.adherence != null) {
-      cats.cores = { applicable: true, score: pal.adherence,
-        comment: `${pal.adherence}% da área da arte usa cores da paleta` + (prof.paletteSource === "estimada" ? " (paleta estimada)." : " oficial.") };
+      cats.cores = { applicable: true, score: pal.adherence, comment: M("c_colors", { a: pal.adherence, estimated: prof.paletteSource === "estimada" }) };
       const off = pal.art.filter((c) => !c.match && c.share >= MIN_SHARE_FINDING);
       if (off.length) {
         const total = off.reduce((s, c) => s + c.share, 0);
-        findings.push(finding(`${off.length} cor(es) fora da paleta (${Math.round(total * 100)}% da arte)`, "cores",
-          total >= 0.2 ? "importante" : "ajuste",
-          "Paleta oficial: " + pal.brand.map((p) => `${p.name} ${p.hex}`).join(", ") + ".",
-          off.map((c) => `${c.hex} (${Math.round(c.share * 100)}%, mais perto de ${c.nearest})`).join("; ") + ".",
-          "Troque essas cores pela cor oficial mais próxima. Se forem sombras de foto ou render, pode ignorar.",
+        findings.push(finding(M("off_title", { n: off.length, total }), "cores", total >= 0.2 ? "importante" : "ajuste",
+          M("off_guideline", { palette: pal.brand }), M("off_observed", { colors: off }), M("off_fix"),
           1, prof.paletteSource === "manual" ? 0.9 : 0.5));
       }
-      if (pal.adherence >= 85) strengths.push("As cores da arte estão dentro da paleta da marca.");
+      if (pal.adherence >= 85) strengths.push(M("s_palette_ok"));
       const used = new Map();  // every official color the art uses, with its share of the area
       for (const c of pal.art) if (c.match) { const k = `${c.nearest} ${c.nearest_hex}`; used.set(k, (used.get(k) || 0) + c.share); }
-      for (const [k, v] of [...used].sort((a, b) => b[1] - a[1])) strengths.push(`Usa a cor oficial ${k} (${Math.round(v * 100)}% da arte).`);
+      for (const [k, v] of [...used].sort((a, b) => b[1] - a[1])) strengths.push(M("s_color", { name: k, share: v }));
     }
 
     // ---- logo
     if (prof.logo) {
-      progress("Procurando o logo na arte…");
+      progress(M("prog_logo"));
       const { cv } = await opencvBox();
       const hits = artImgs.map((img, i) => [i + 1, findLogo(cv, img, prof.logo)]).filter(([, h]) => h);
       if (!hits.length) {
-        review.push(finding("Não encontrei o logo na arte", "logo", "ajuste",
-          "O logo do manual foi procurado em todas as imagens da arte.", "Nenhuma área parecida com o logo.",
-          "Se a peça deveria ter logo, confira se ele está lá e sem distorção. Logos muito pequenos, inclinados ou em versão diferente podem não ser reconhecidos.",
-          1, 0.4));
+        review.push(finding(M("nf_title"), "logo", "ajuste", M("nf_guideline"), M("nf_observed"), M("nf_fix"), 1, 0.4));
       } else {
-        let score = 100;
-        const comments = [];
-        const matched = ["Logo da marca presente na arte" + (hits.length > 1 ? ` (${hits.length} imagens).` : ".")];
+        let score = 100, clearOk = false, colorName = "";
+        const matched = [M("s_logo", { n: hits.length })];
         for (const [i, h] of hits) {
           const img = artImgs[i - 1];
           const [x, y, w, hh] = h.box;
@@ -447,13 +440,11 @@ const BrandEngine = (() => {
             const need = prof.clearspace * w, gap = Math.min(x, y, img.width - (x + w), img.height - (y + hh));
             if (gap < need * 0.9) {
               score -= 30;
-              findings.push(finding("Logo sem a área de proteção", "logo", "critico",
-                `O manual pede um respiro de ${frac(prof.clearspace)} da largura do logo em volta dele.`,
-                `O logo está a ${Math.max(0, gap)}px da borda; o mínimo seria ${Math.round(need)}px.`,
-                "Afaste o logo da borda ou diminua o tamanho dele.", i));
-            } else {
-              comments.push("respeita a área de proteção");
-              matched.push(`Logo com a área de proteção de ${frac(prof.clearspace)} respeitada.`);
+              findings.push(finding(M("cl_title"), "logo", "critico", M("cl_guideline", { frac: frac(prof.clearspace) }),
+                M("cl_observed", { gap: Math.max(0, gap), need: Math.round(need) }), M("cl_fix"), i));
+            } else if (!clearOk) {
+              clearOk = true;
+              matched.push(M("s_logo_clear", { frac: frac(prof.clearspace) }));
             }
           }
           if (h.color && prof.palette.length) {
@@ -462,20 +453,17 @@ const BrandEngine = (() => {
             if (de > 15) {
               const sure = de > 30;
               if (sure) score -= 25;
-              (sure ? findings : review).push(finding("Logo numa cor fora da paleta", "logo", sure ? "importante" : "ajuste",
-                "O logo deve usar uma das cores oficiais da marca.",
-                `O logo aparece em ${h.color}; a cor oficial mais próxima é ${near.name} ${near.hex}.`,
-                `Aplique o logo em ${near.hex} ou em outra versão prevista no manual. Se a arte for foto ou render, a luz pode explicar a diferença.`,
+              (sure ? findings : review).push(finding(M("lc_title"), "logo", sure ? "importante" : "ajuste", M("lc_guideline"),
+                M("lc_observed", { color: h.color, name: near.name, hex: near.hex }), M("lc_fix", { hex: near.hex }),
                 i, sure ? 0.8 : 0.45));
-            } else {
-              comments.push(`na cor ${near.name}`);
-              matched.push(`Logo na cor oficial ${near.name} ${near.hex}.`);
+            } else if (!colorName) {
+              colorName = near.name;
+              matched.push(M("s_logo_color", { name: near.name, hex: near.hex }));
             }
           }
         }
-        cats.logo = { applicable: true, score: Math.max(0, score),
-          comment: "Logo encontrado" + (hits.length > 1 ? ` em ${hits.length} imagens` : "") + (comments.length ? `, ${[...new Set(comments)].join(", ")}.` : ".") };
-        strengths.unshift(...new Set(matched));  // logo first: it is what clients notice first
+        cats.logo = { applicable: true, score: Math.max(0, score), comment: M("c_logo", { n: hits.length, clear: clearOk, color: colorName }) };
+        strengths.unshift(...matched);  // logo first: it is what clients notice first
       }
     }
 
@@ -487,24 +475,24 @@ const BrandEngine = (() => {
       const ok = artFonts.filter((f) => brandKeys.has(key(f)));
       const off = artFonts.filter((f) => !ok.includes(f) && !GENERIC_FONTS.has(key(f)));
       if (artFonts.length) {
-        cats.tipografia = { applicable: true, score: Math.round((100 * ok.length) / Math.max(1, ok.length + off.length)), comment: `Fontes da arte: ${artFonts.join(", ")}.` };
-        for (const f of off) findings.push(finding(`Fonte fora da marca: ${f}`, "tipografia", "importante",
-          `O manual usa ${prof.fonts.join(", ")}.`, `A arte usa ${f}.`, `Troque ${f} por ${prof.fonts[0]}.`));
-        for (const f of ok) strengths.push(`Usa a fonte da marca ${f}.`);
+        cats.tipografia = { applicable: true, score: Math.round((100 * ok.length) / Math.max(1, ok.length + off.length)), comment: M("c_fonts", { fonts: artFonts }) };
+        for (const f of off) findings.push(finding(M("ft_title", { f }), "tipografia", "importante",
+          M("ft_guideline", { brand: prof.fonts }), M("ft_observed", { f }), M("ft_fix", { f, to: prof.fonts[0] })));
+        for (const f of ok) strengths.push(M("s_font", { f }));
       }
     }
-    if (!cats.tipografia.applicable) cats.tipografia.comment = "Só dá para conferir fontes quando a arte e o manual são PDFs com fontes identificáveis.";
-    for (const k of ["composicao", "elementos", "linguagem"]) cats[k].comment = "Precisa de análise com IA.";
-    if (!cats.logo.comment) cats.logo.comment = prof.logo ? "Não encontrei o logo na arte." : "Não consegui extrair o logo do manual.";
+    if (!cats.tipografia.applicable) cats.tipografia.comment = M("c_typo_na");
+    for (const k of ["composicao", "elementos", "linguagem"]) cats[k].comment = M("c_needs_ai");
+    if (!cats.logo.comment) cats.logo.comment = M(prof.logo ? "c_logo_nf" : "c_logo_nx");
 
     const categories = CATEGORIES.map(([key, label, weight]) => ({ key, label, weight, ...cats[key] }));
     findings.sort((a, b) => SEVERITIES.indexOf(a.severity) - SEVERITIES.indexOf(b.severity));
     const score = overall(categories);
-    const measured = categories.filter((c) => c.applicable).map((c) => c.label.toLowerCase());
-    const crit = findings.filter((f) => f.severity === "critico").length;
-    let summary = score == null ? "Não consegui medir nada nessa arte."
-      : `Medi ${measured.join(", ")}. ` + (findings.length ? `${findings.length} ponto(s) para ajustar` + (crit ? `, ${crit} crítico(s).` : ".") : "Nada fora do manual nesses critérios.");
-    if (prof.notes.length) summary += " " + prof.notes.join(" ");
+    const summary = M("summary", {
+      score, measured: categories.filter((c) => c.applicable).map((c) => c.key),
+      n: findings.length, crit: findings.filter((f) => f.severity === "critico").length,
+      estimated: prof.paletteSource === "estimada",
+    });
 
     return {
       mode: "browser", brand_name: prof.name, summary, score, categories, findings, to_review: review,
