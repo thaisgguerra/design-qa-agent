@@ -23,16 +23,38 @@ function band(score) {
 }
 
 /* ------------------------------------------------ setup */
-fetch("api/config").then((r) => r.json()).then((c) => {
+// With the Python server (web/app.py) the page uses its API. Without it (GitHub Pages) there is no
+// /api, so the free mode runs right here in the browser with engine.js.
+let browserMode = false;
+
+function freeBanner(extra = "") {
+  const b = $("#setup-warning");
+  b.classList.add("info");
+  b.innerHTML = "<strong>Modo gratuito.</strong> A comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF. Composição e tom de voz só entram no modo com IA." + extra;
+  b.hidden = false;
+  $("#loading-hint").textContent = "Leva só alguns segundos.";
+}
+
+function enterBrowserMode() {
+  browserMode = true;
+  serverConfig = { mode: "browser", figma: false };
+  freeBanner(" <br>Tudo roda no seu navegador: os arquivos não saem do seu computador. Aqui só dá para enviar arquivos, não links.");
+  $$(".input-card").forEach((card) => {
+    $(".seg", card).hidden = true;
+    card.dataset.mode = "file";
+    $(".mode-link", card).hidden = true;
+    $(".mode-file", card).hidden = false;
+  });
+  $(".tip").hidden = true;
+}
+
+fetch("api/config").then((r) => {
+  if (!r.ok) throw new Error("no server");
+  return r.json();
+}).then((c) => {
   serverConfig = c;
-  if (c.mode === "free") {
-    const b = $("#setup-warning");
-    b.classList.add("info");
-    b.innerHTML = "<strong>Modo gratuito.</strong> A comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF. Composição e tom de voz só entram no modo com IA.";
-    b.hidden = false;
-    $("#loading-hint").textContent = "Leva só alguns segundos.";
-  }
-}).catch(() => {});
+  if (c.mode === "free") freeBanner();
+}).catch(enterBrowserMode);
 
 /* ------------------------------------------------ input cards */
 function linkKind(url) {
@@ -109,6 +131,20 @@ form.addEventListener("submit", async (e) => {
   if (!art) return showError("Falta a arte: cole um link ou escolha um arquivo no passo 1.");
   if (!brand) return showError("Falta o manual de marca: cole um link ou escolha um arquivo no passo 2.");
 
+  if (browserMode) {
+    setLoading(true, true);
+    try {
+      const data = await BrandEngine.check(art.file, brand.file, (msg) => { $("#loading-msg").textContent = msg; });
+      setLoading(false);
+      render(data);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+      showError(err.message || "Não foi possível analisar.");
+    }
+    return;
+  }
+
   const fd = new FormData();
   if (art.file) fd.append("art_file", art.file); else fd.append("art_url", art.url);
   if (brand.file) fd.append("brand_file", brand.file); else fd.append("brand_url", brand.url);
@@ -127,12 +163,15 @@ form.addEventListener("submit", async (e) => {
   }
 });
 
-function setLoading(on) {
+function setLoading(on, manualMessages = false) {
   form.hidden = on;
   $("#loading").hidden = !on;
   $("#result").hidden = true;
   clearInterval(loadingTimer);
-  if (on) {
+  if (on && manualMessages) {  // the browser engine reports its own steps
+    $("#loading-msg").textContent = "Preparando…";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } else if (on) {
     let i = 0;
     const msg = $("#loading-msg");
     msg.textContent = LOADING_MSGS[0];
@@ -181,7 +220,7 @@ function render(r) {
     r.brand_name && `Marca: ${esc(r.brand_name)}`,
     `Arte: ${esc(r.art.name)}`,
     r.palette.adherence != null && `Paleta medida: ${r.palette.adherence}% nas cores oficiais`,
-    r.mode === "free" && "Modo gratuito",
+    r.mode !== "ai" && "Modo gratuito",
   ].filter(Boolean).map((t) => `<span class="meta">${t}</span>`).join("");
 
   $("#previews").innerHTML = r.art.previews.map((src, i) =>

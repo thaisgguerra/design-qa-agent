@@ -79,6 +79,8 @@ How it scores, in the same perceive / reason / verify shape as the screen agent:
 
 **Free mode (no API key).** Without `ANTHROPIC_API_KEY` the page still works and costs nothing: it only reports what can be measured. Colors: the official palette is read from the codes written in the manual (hex or RGB) and compared with the art's measured colors. Logo: the transparent logo image is taken from the manual, searched in the art with color-independent edge matching, confirmed by checking that the shape stands out from its background, and then its color and its distance to the edges are checked against the clearspace rule written in the manual (e.g. "um terço da largura"). Fonts: compared only when both files are PDFs with named fonts. Composition, graphic elements and tone of voice need the AI mode.
 
+**GitHub Pages (no server).** The same page is published to GitHub Pages by `.github/workflows/pages.yml`. When there is no `/api` it runs the free mode in the browser (`web/static/engine.js`, a port of `brand_free.py` using pdf.js and OpenCV.js), so files never leave the user's computer. Only uploads work there, since browsers can't download Drive or Figma files from another site.
+
 Google Drive files must be shared as "Anyone with the link". Links are fetched server side, so URLs that resolve to private networks are refused.
 
 ## Evals
