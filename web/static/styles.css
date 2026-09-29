@@ -61,14 +61,19 @@ button { font: inherit; cursor: pointer; }
 .hero-copy { max-width: 600px; margin-top: 48px; position: relative; z-index: 1; }
 .hero h1 { color: var(--white); font-size: clamp(30px, 5vw, 46px); font-weight: 400; line-height: 1.12; letter-spacing: -.01em; }
 .hero p { margin-top: 14px; font-size: 18px; font-weight: 300; color: rgba(255,255,255,.85); }
-.dots { position: absolute; right: 16px; top: 64px; width: 250px; height: 200px; }
-.dot { position: absolute; border-radius: 50%; animation: float 6s ease-in-out infinite; }
-.d-green  { width: 96px; height: 96px; background: var(--green); left: 0; top: 30px; }
-.d-pink   { width: 64px; height: 64px; background: var(--pink); left: 120px; top: 0; animation-delay: -1.5s; }
-.d-yellow { width: 56px; height: 56px; background: var(--yellow); left: 150px; top: 110px; animation-delay: -3s; }
-.d-pool   { width: 40px; height: 40px; background: var(--pool); left: 70px; top: 150px; animation-delay: -4.5s; }
-@keyframes float { 50% { transform: translateY(-10px); } }
-@media (max-width: 760px) { .dots { display: none; } .hero-copy { margin-top: 32px; } }
+.hero-inner { min-height: 330px; }
+.machines { position: absolute; right: 16px; top: 24px; width: 400px; height: 320px; }
+.machine {
+  position: absolute; bottom: 0; height: auto;
+  filter: drop-shadow(0 24px 22px rgba(0, 0, 0, .35));
+  animation: float 6s ease-in-out infinite;
+}
+.m-wide { width: 180px; right: 36px; }
+.m-slim { width: 116px; right: 226px; bottom: 16px; animation-delay: -3s; animation-duration: 5s; }
+.dot { position: absolute; width: var(--s); height: var(--s); border-radius: 50%; background: var(--c); opacity: .9; animation: float 7s ease-in-out infinite; }
+@keyframes float { 50% { transform: translateY(-14px); } }
+@media (max-width: 1000px) { .machines { transform: scale(.78); transform-origin: top right; } .hero-copy { max-width: 440px; } }
+@media (max-width: 760px) { .machines { display: none; } .hero-inner { min-height: 0; } .hero-copy { margin-top: 32px; max-width: none; } }
 
 /* ------------------------------------------------ cards and layout */
 main { margin-top: -64px; position: relative; }
