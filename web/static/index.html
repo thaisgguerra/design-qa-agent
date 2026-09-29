@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flori Brand Check</title>
+  <meta name="description" content="Compare uma arte com o manual de marca do cliente e veja a aderência em percentual.">
+  <link rel="icon" href="favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap hero-inner">
+      <div class="brandbar">
+        <img src="logo-white.png" alt="Flori Tech" class="logo">
+        <span class="product-tag">Brand Check</span>
+      </div>
+      <div class="hero-copy">
+        <h1>Essa arte condiz com a marca?</h1>
+        <p>Envie a arte e o manual de marca do cliente. A gente confere logo, cores, tipografia e composição e devolve uma nota com o que ajustar.</p>
+      </div>
+      <div class="dots" aria-hidden="true">
+        <span class="dot d-green"></span><span class="dot d-pink"></span>
+        <span class="dot d-yellow"></span><span class="dot d-pool"></span>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="setup-warning" class="banner" hidden></div>
+
+    <!-- ============================== FORM -->
+    <form id="form" class="panel-form" novalidate>
+      <div class="inputs">
+        <section class="card input-card" data-slot="art">
+          <div class="card-head">
+            <span class="step step-green">1</span>
+            <div>
+              <h2>A arte</h2>
+              <p class="muted">O que foi produzido: post, banner, apresentação…</p>
+            </div>
+          </div>
+          <div class="seg" role="tablist" aria-label="Como enviar a arte">
+            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true">Link</button>
+            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false">Arquivo</button>
+          </div>
+          <div class="mode mode-link">
+            <label class="field">
+              <span class="sr-only">Link da arte</span>
+              <input type="url" name="art_url" placeholder="Cole o link do Figma, Google Drive ou da imagem" autocomplete="off">
+            </label>
+            <div class="chip-row" aria-live="polite"></div>
+          </div>
+          <div class="mode mode-file" hidden>
+            <label class="drop">
+              <input type="file" name="art_file" accept="image/png,image/jpeg,image/webp,image/gif,application/pdf">
+              <span class="drop-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L6 21"/></svg>
+              </span>
+              <span class="drop-text"><strong>Arraste a arte aqui</strong> ou clique para escolher</span>
+              <span class="drop-hint">PNG, JPG, WEBP ou PDF, até 30 MB</span>
+            </label>
+          </div>
+        </section>
+
+        <section class="card input-card" data-slot="brand">
+          <div class="card-head">
+            <span class="step step-pink">2</span>
+            <div>
+              <h2>O manual de marca</h2>
+              <p class="muted">A identidade visual do cliente, de preferência em PDF.</p>
+            </div>
+          </div>
+          <div class="seg" role="tablist" aria-label="Como enviar o manual">
+            <button type="button" class="seg-btn is-on" data-mode="link" role="tab" aria-selected="true">Link</button>
+            <button type="button" class="seg-btn" data-mode="file" role="tab" aria-selected="false">Arquivo</button>
+          </div>
+          <div class="mode mode-link">
+            <label class="field">
+              <span class="sr-only">Link do manual de marca</span>
+              <input type="url" name="brand_url" placeholder="Cole o link do Google Drive ou do PDF" autocomplete="off">
+            </label>
+            <div class="chip-row" aria-live="polite"></div>
+          </div>
+          <div class="mode mode-file" hidden>
+            <label class="drop">
+              <input type="file" name="brand_file" accept="application/pdf,image/png,image/jpeg,image/webp">
+              <span class="drop-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></svg>
+              </span>
+              <span class="drop-text"><strong>Arraste o manual aqui</strong> ou clique para escolher</span>
+              <span class="drop-hint">PDF ou imagem, até 30 MB</span>
+            </label>
+          </div>
+        </section>
+      </div>
+
+      <div class="card notes-card">
+        <label class="field">
+          <span class="field-label">Contexto <span class="muted">(opcional)</span></span>
+          <input type="text" name="notes" maxlength="1000" placeholder="Ex.: post de Instagram para a campanha de lançamento, fundo escuro de propósito">
+        </label>
+        <button type="submit" class="btn-primary" id="submit">
+          Comparar com o manual
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <p class="tip">
+        <strong>Dica:</strong> links do Google Drive precisam estar em <em>Compartilhar → Qualquer pessoa com o link</em>.
+        No Figma, copie o link do frame (botão direito → <em>Copy link to selection</em>).
+      </p>
+      <div id="form-error" class="error" role="alert" hidden></div>
+    </form>
+
+    <!-- ============================== LOADING -->
+    <section id="loading" class="card loading" hidden aria-live="polite">
+      <svg class="spinner" viewBox="0 0 120 120" aria-hidden="true">
+        <circle cx="60" cy="60" r="46" class="sp sp1"/><circle cx="60" cy="60" r="46" class="sp sp2"/>
+        <circle cx="60" cy="60" r="46" class="sp sp3"/><circle cx="60" cy="60" r="46" class="sp sp4"/>
+      </svg>
+      <p class="loading-msg" id="loading-msg">Lendo o manual de marca…</p>
+      <p class="muted">Leva uns 30 a 60 segundos.</p>
+    </section>
+
+    <!-- ============================== RESULT -->
+    <section id="result" hidden>
+      <div class="card score-card">
+        <div class="donut-wrap">
+          <svg class="donut" viewBox="0 0 200 200" role="img" aria-labelledby="score-label">
+            <circle cx="100" cy="100" r="80" class="donut-track"/>
+            <circle cx="100" cy="100" r="80" class="donut-value" id="donut-value"/>
+          </svg>
+          <div class="donut-center">
+            <span class="donut-num"><span id="score-num">0</span><small>%</small></span>
+            <span class="donut-sub">na marca</span>
+          </div>
+        </div>
+        <div class="score-copy">
+          <span class="verdict" id="verdict"></span>
+          <h2 id="score-label" class="score-title"></h2>
+          <p id="summary" class="summary"></p>
+          <div class="meta-row" id="meta-row"></div>
+        </div>
+        <div class="previews" id="previews"></div>
+      </div>
+
+      <h3 class="section-title">Nota por critério</h3>
+      <div class="cats" id="cats"></div>
+
+      <div class="two-col">
+        <div class="card">
+          <h3 class="card-title">Paleta</h3>
+          <p class="muted small">Cores oficiais lidas no manual e cores medidas na arte.</p>
+          <div id="palette"></div>
+        </div>
+        <div class="card">
+          <h3 class="card-title">O que está mandando bem</h3>
+          <ul class="strengths" id="strengths"></ul>
+        </div>
+      </div>
+
+      <h3 class="section-title">O que ajustar <span class="count" id="findings-count"></span></h3>
+      <div id="findings" class="findings"></div>
+      <details id="review" class="review" hidden>
+        <summary>Pontos para revisar <span class="muted">(a IA não tem certeza)</span></summary>
+        <div id="review-list" class="findings"></div>
+      </details>
+
+      <div class="actions">
+        <button type="button" class="btn-ghost" id="copy">Copiar relatório</button>
+        <button type="button" class="btn-primary" id="again">Nova comparação</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <img src="logo-dark.png" alt="" class="footer-logo">
+    <span>Brand Check · feito pela Flori Tech</span>
+  </footer>
+
+  <canvas id="confetti" aria-hidden="true"></canvas>
+  <script src="app.js"></script>
+</body>
+</html>

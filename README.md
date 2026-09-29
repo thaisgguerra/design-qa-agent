@@ -59,6 +59,26 @@ Useful flags:
 
 Output lives in `runs/<screen>/`: `report.html`, `findings.json`, `evidence/*.png`, `tickets/`.
 
+## Brand Check (web app)
+
+A simple web page for the design team: paste a link (Figma, Google Drive, or a direct image/PDF URL) or upload the **art**, do the same for the **client's brand manual**, and get an on-brand score as a percentage, with a score per criterion (logo, color, typography, composition, graphic elements, tone of voice), the official palette against the colors measured in the art, and a list of what to fix. The interface is in Portuguese and follows the Flori Tech visual identity.
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env        # add ANTHROPIC_API_KEY (FIGMA_TOKEN only if you want Figma links)
+uvicorn web.app:app --port 8000
+```
+
+Open http://localhost:8000.
+
+How it scores, in the same perceive / reason / verify shape as the screen agent:
+
+- **Perceive.** Dominant colors of the art are measured with PIL (no AI).
+- **Reason.** Claude reads the brand manual as a native PDF (cached, since the same manual is reused across many pieces) plus the art images, and returns a per-criterion score and findings through a forced tool call. Criteria the manual does not cover are marked as not applicable, so they don't count.
+- **Verify.** The overall score is computed in code as a weighted mean of the applicable criteria (logo 25%, color 25%, typography 20%, composition 15%, graphic elements 10%, tone 5%), not by the model. The palette the model read from the manual is checked against the measured colors (CIE ΔE). Low-confidence findings go to a "to review" list.
+
+Google Drive files must be shared as "Anyone with the link". Links are fetched server side, so URLs that resolve to private networks are refused.
+
 ## Evals
 
 The eval set has a known answer key. The same screen is rendered twice: the clean version plays the Figma design and a copy with injected bugs plays the implementation. Clean cases (only a dynamic timestamp changed) measure false positives.
@@ -102,6 +122,9 @@ designqa/verify.py     guardrails: evidence, color check, dedupe, confidence gat
 designqa/evidence.py   side by side evidence images
 designqa/trackers.py   ClickUp, Linear, markdown tickets
 designqa/report.py     HTML review report
+designqa/sources.py    brand check inputs: Figma, Google Drive, URLs, uploads
+designqa/brand.py      brand check: palette measurement, Claude scoring, guardrails
+web/                   Brand Check web app (FastAPI + static page)
 evals/                 dataset generator, answer key, scoring
 ```
 
