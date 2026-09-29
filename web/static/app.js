@@ -18,11 +18,12 @@ function band(score) {
 }
 
 /* ------------------------------------------------ language */
+["flag-us.svg", "flag-br.svg"].forEach((src) => { new Image().src = src; });  // no flash on the first switch
 function applyLanguage() {
   I18N.apply();
   document.title = t("title");
   const btn = $("#lang-btn");
-  btn.textContent = t("lang_toggle");
+  btn.innerHTML = `<img src="${t("lang_toggle_flag")}" alt="" class="flag">${esc(t("lang_toggle"))}`;
   btn.setAttribute("aria-label", t("lang_toggle_label"));
   renderBanner();
   $$(".drop.has-file").forEach((d) => d.showFile && d.showFile());
