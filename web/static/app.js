@@ -30,7 +30,7 @@ let browserMode = false;
 function freeBanner(extra = "") {
   const b = $("#setup-warning");
   b.classList.add("info");
-  b.innerHTML = "<strong>Modo gratuito.</strong> A comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF. Composição e tom de voz só entram no modo com IA." + extra;
+  b.innerHTML = "<strong>Como funciona:</strong> a comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF." + extra;
   b.hidden = false;
   $("#loading-hint").textContent = "Leva só alguns segundos.";
 }
@@ -220,7 +220,6 @@ function render(r) {
     r.brand_name && `Marca: ${esc(r.brand_name)}`,
     `Arte: ${esc(r.art.name)}`,
     r.palette.adherence != null && `Paleta medida: ${r.palette.adherence}% nas cores oficiais`,
-    r.mode !== "ai" && "Modo gratuito",
   ].filter(Boolean).map((t) => `<span class="meta">${t}</span>`).join("");
 
   $("#previews").innerHTML = r.art.previews.map((src, i) =>

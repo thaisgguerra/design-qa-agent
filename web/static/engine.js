@@ -502,13 +502,13 @@ const BrandEngine = (() => {
     const score = overall(categories);
     const measured = categories.filter((c) => c.applicable).map((c) => c.label.toLowerCase());
     const crit = findings.filter((f) => f.severity === "critico").length;
-    let summary = score == null ? "Não consegui medir nada nessa arte com o modo gratuito."
+    let summary = score == null ? "Não consegui medir nada nessa arte."
       : `Medi ${measured.join(", ")}. ` + (findings.length ? `${findings.length} ponto(s) para ajustar` + (crit ? `, ${crit} crítico(s).` : ".") : "Nada fora do manual nesses critérios.");
     if (prof.notes.length) summary += " " + prof.notes.join(" ");
 
     return {
       mode: "browser", brand_name: prof.name, summary, score, categories, findings, to_review: review,
-      strengths: strengths.slice(0, 8), brand_fonts: prof.fonts, palette: pal, model: "gratuito", cost_usd: 0,
+      strengths: strengths.slice(0, 8), brand_fonts: prof.fonts, palette: pal, model: "medicao", cost_usd: 0,
       seconds: Math.round((performance.now() - t0) / 100) / 10,
       art: { name: art.name, origin: "upload", previews: artImgs.map((c) => fit(c, 720).toDataURL("image/jpeg", 0.8)) },
       brand: { name: brand.name, origin: "upload" },

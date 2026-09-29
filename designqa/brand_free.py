@@ -220,7 +220,7 @@ def _finding(title, category, severity, guideline, observed, suggestion, art_ind
 
 
 class FreeBrandChecker:
-    model = "gratuito"
+    model = "medicao"
 
     def check(self, art: Source, brand: Source, notes: str = "") -> dict:
         t0 = time.time()
@@ -372,7 +372,7 @@ def _frac(v: float) -> str:
 
 def _summary(score, findings, categories) -> str:
     if score is None:
-        return "Não consegui medir nada nessa arte com o modo gratuito."
+        return "Não consegui medir nada nessa arte."
     measured = [c["label"].lower() for c in categories if c["applicable"]]
     crit = sum(f["severity"] == "critico" for f in findings)
     base = f"Medi {', '.join(measured)}. "
