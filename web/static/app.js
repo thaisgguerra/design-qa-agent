@@ -245,7 +245,7 @@ function render(r) {
 
   $("#strengths").innerHTML = r.strengths.length
     ? r.strengths.map((s) => `<li>${esc(s)}</li>`).join("")
-    : `<li class="muted">Nada em destaque desta vez.</li>`;
+    : `<li class="none">Nada bateu com o manual nos critérios medidos.</li>`;
 
   $("#findings-count").textContent = r.findings.length;
   $("#findings").innerHTML = r.findings.length

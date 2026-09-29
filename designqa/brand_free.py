@@ -251,6 +251,13 @@ class FreeBrandChecker:
                     confidence=0.9 if prof.palette_source == "manual" else 0.5))
             if pal["adherence"] >= 85:
                 strengths.append("As cores da arte estão dentro da paleta da marca.")
+            used: dict[str, float] = {}  # every official color the art uses, with its share of the area
+            for c in pal["art"]:
+                if c["match"]:
+                    key = f"{c['nearest']} {c['nearest_hex']}"
+                    used[key] = used.get(key, 0) + c["share"]
+            strengths += [f"Usa a cor oficial {k} ({v:.0%} da arte)." for k, v in
+                          sorted(used.items(), key=lambda kv: -kv[1])]
 
         # ---- logo
         if prof.logo is not None:
@@ -265,7 +272,9 @@ class FreeBrandChecker:
                     "Logos muito pequenos, inclinados ou em versão diferente podem não ser reconhecidos.",
                     confidence=0.4))
             else:
-                score, comments = 100, []
+                score, comments, matched = 100, [], []
+                n = len(hits)
+                matched.append("Logo da marca presente na arte" + (f" ({n} imagens)." if n > 1 else "."))
                 for i, h in hits:
                     img = art_imgs[i - 1]
                     x, y, w, hh = h["box"]
@@ -282,6 +291,7 @@ class FreeBrandChecker:
                                 "Afaste o logo da borda ou diminua o tamanho dele.", art_index=i))
                         else:
                             comments.append("respeita a área de proteção")
+                            matched.append(f"Logo com a área de proteção de {_frac(prof.clearspace)} respeitada.")
                     # color of the logo
                     col = h["color"]
                     if col and prof.palette:
@@ -300,12 +310,11 @@ class FreeBrandChecker:
                                 art_index=i, confidence=0.8 if sure else 0.45))
                         else:
                             comments.append(f"na cor {near['name']}")
-                n = len(hits)
+                            matched.append(f"Logo na cor oficial {near['name']} {near['hex']}.")
                 cats["logo"] = {"applicable": True, "score": max(0, score), "comment":
                                 ("Logo encontrado" + (f" em {n} imagens" if n > 1 else "")
                                  + (f", {', '.join(dict.fromkeys(comments))}." if comments else "."))}
-                if score == 100:
-                    strengths.append("O logo aparece do jeito que o manual pede.")
+                strengths[:0] = list(dict.fromkeys(matched))  # logo first: it is what clients notice first
 
         # ---- typography (only PDFs carry font names)
         if prof.fonts and art.pdf:
@@ -325,8 +334,7 @@ class FreeBrandChecker:
                         f"Fonte fora da marca: {f}", "tipografia", "importante",
                         f"O manual usa {', '.join(prof.fonts)}.", f"A arte usa {f}.",
                         f"Troque {f} por {prof.fonts[0]}."))
-                if ok and not off:
-                    strengths.append(f"Usa a tipografia da marca ({', '.join(ok)}).")
+                strengths += [f"Usa a fonte da marca {f}." for f in ok]
         if not cats["tipografia"]["applicable"]:
             cats["tipografia"]["comment"] = ("Só dá para conferir fontes quando a arte e o manual são PDFs "
                                              "com fontes identificáveis.")
@@ -349,7 +357,7 @@ class FreeBrandChecker:
             "categories": categories,
             "findings": findings,
             "to_review": review,
-            "strengths": strengths[:4],
+            "strengths": strengths[:8],
             "brand_fonts": prof.fonts,
             "palette": pal,
             "model": self.model,

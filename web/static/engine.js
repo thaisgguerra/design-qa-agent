@@ -421,6 +421,9 @@ const BrandEngine = (() => {
           1, prof.paletteSource === "manual" ? 0.9 : 0.5));
       }
       if (pal.adherence >= 85) strengths.push("As cores da arte estão dentro da paleta da marca.");
+      const used = new Map();  // every official color the art uses, with its share of the area
+      for (const c of pal.art) if (c.match) { const k = `${c.nearest} ${c.nearest_hex}`; used.set(k, (used.get(k) || 0) + c.share); }
+      for (const [k, v] of [...used].sort((a, b) => b[1] - a[1])) strengths.push(`Usa a cor oficial ${k} (${Math.round(v * 100)}% da arte).`);
     }
 
     // ---- logo
@@ -436,6 +439,7 @@ const BrandEngine = (() => {
       } else {
         let score = 100;
         const comments = [];
+        const matched = ["Logo da marca presente na arte" + (hits.length > 1 ? ` (${hits.length} imagens).` : ".")];
         for (const [i, h] of hits) {
           const img = artImgs[i - 1];
           const [x, y, w, hh] = h.box;
@@ -447,7 +451,10 @@ const BrandEngine = (() => {
                 `O manual pede um respiro de ${frac(prof.clearspace)} da largura do logo em volta dele.`,
                 `O logo está a ${Math.max(0, gap)}px da borda; o mínimo seria ${Math.round(need)}px.`,
                 "Afaste o logo da borda ou diminua o tamanho dele.", i));
-            } else comments.push("respeita a área de proteção");
+            } else {
+              comments.push("respeita a área de proteção");
+              matched.push(`Logo com a área de proteção de ${frac(prof.clearspace)} respeitada.`);
+            }
           }
           if (h.color && prof.palette.length) {
             let near = prof.palette[0], de = Infinity;
@@ -460,12 +467,15 @@ const BrandEngine = (() => {
                 `O logo aparece em ${h.color}; a cor oficial mais próxima é ${near.name} ${near.hex}.`,
                 `Aplique o logo em ${near.hex} ou em outra versão prevista no manual. Se a arte for foto ou render, a luz pode explicar a diferença.`,
                 i, sure ? 0.8 : 0.45));
-            } else comments.push(`na cor ${near.name}`);
+            } else {
+              comments.push(`na cor ${near.name}`);
+              matched.push(`Logo na cor oficial ${near.name} ${near.hex}.`);
+            }
           }
         }
         cats.logo = { applicable: true, score: Math.max(0, score),
           comment: "Logo encontrado" + (hits.length > 1 ? ` em ${hits.length} imagens` : "") + (comments.length ? `, ${[...new Set(comments)].join(", ")}.` : ".") };
-        if (score === 100) strengths.push("O logo aparece do jeito que o manual pede.");
+        strengths.unshift(...new Set(matched));  // logo first: it is what clients notice first
       }
     }
 
@@ -480,7 +490,7 @@ const BrandEngine = (() => {
         cats.tipografia = { applicable: true, score: Math.round((100 * ok.length) / Math.max(1, ok.length + off.length)), comment: `Fontes da arte: ${artFonts.join(", ")}.` };
         for (const f of off) findings.push(finding(`Fonte fora da marca: ${f}`, "tipografia", "importante",
           `O manual usa ${prof.fonts.join(", ")}.`, `A arte usa ${f}.`, `Troque ${f} por ${prof.fonts[0]}.`));
-        if (ok.length && !off.length) strengths.push(`Usa a tipografia da marca (${ok.join(", ")}).`);
+        for (const f of ok) strengths.push(`Usa a fonte da marca ${f}.`);
       }
     }
     if (!cats.tipografia.applicable) cats.tipografia.comment = "Só dá para conferir fontes quando a arte e o manual são PDFs com fontes identificáveis.";
@@ -498,7 +508,7 @@ const BrandEngine = (() => {
 
     return {
       mode: "browser", brand_name: prof.name, summary, score, categories, findings, to_review: review,
-      strengths: strengths.slice(0, 4), brand_fonts: prof.fonts, palette: pal, model: "gratuito", cost_usd: 0,
+      strengths: strengths.slice(0, 8), brand_fonts: prof.fonts, palette: pal, model: "gratuito", cost_usd: 0,
       seconds: Math.round((performance.now() - t0) / 100) / 10,
       art: { name: art.name, origin: "upload", previews: artImgs.map((c) => fit(c, 720).toDataURL("image/jpeg", 0.8)) },
       brand: { name: brand.name, origin: "upload" },
