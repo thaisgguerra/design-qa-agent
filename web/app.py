@@ -1,5 +1,7 @@
 """Flori Brand Check: web interface for the brand check agent.
 
+With ANTHROPIC_API_KEY set it uses Claude; without it, the free mode measures colors, logo and fonts.
+
 Run locally:
     uvicorn web.app:app --reload
 and open http://localhost:8000
@@ -20,6 +22,7 @@ sys.path.insert(0, str(ROOT))
 
 from designqa import config  # noqa: E402
 from designqa.brand import BrandChecker  # noqa: E402
+from designqa.brand_free import FreeBrandChecker  # noqa: E402
 from designqa.sources import MAX_BYTES, Source, SourceError, fetch_url, from_bytes  # noqa: E402
 
 app = FastAPI(title="Flori Brand Check")
@@ -45,7 +48,9 @@ def _preview(src: Source, limit: int = 6) -> list[str]:
 
 @app.get("/api/config")
 def get_config():
-    return {"ready": bool(config.ANTHROPIC_API_KEY), "figma": bool(config.FIGMA_TOKEN), "model": config.MODEL}
+    # without an API key the page still works, in the free (measured only) mode
+    return {"mode": "ai" if config.ANTHROPIC_API_KEY else "free", "figma": bool(config.FIGMA_TOKEN),
+            "model": config.MODEL}
 
 
 @app.post("/api/analyze")
@@ -58,7 +63,9 @@ def analyze(art_url: str = Form(""), brand_url: str = Form(""), notes: str = For
                 raise SourceError(f"Envie {what}: cole um link ou escolha um arquivo.")
         art = _load(art_url, art_file, "a arte")
         brand = _load(brand_url, brand_file, "o manual de marca")
-        result = BrandChecker().check(art, brand, notes=notes[:1000])
+        checker = BrandChecker() if config.ANTHROPIC_API_KEY else FreeBrandChecker()
+        result = checker.check(art, brand, notes=notes[:1000])
+        result.setdefault("mode", "ai")
     except SourceError as e:
         return JSONResponse({"error": str(e)}, status_code=400)
     except RuntimeError as e:

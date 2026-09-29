@@ -12,7 +12,7 @@ const LOADING_MSGS = [
   "Conferindo o respiro do logo…", "Checando as fontes…", "Olhando a composição…", "Escrevendo o feedback…",
 ];
 
-let serverConfig = { ready: true, figma: true };
+let serverConfig = { mode: "ai", figma: true };
 let lastResult = null;
 
 function band(score) {
@@ -25,10 +25,12 @@ function band(score) {
 /* ------------------------------------------------ setup */
 fetch("api/config").then((r) => r.json()).then((c) => {
   serverConfig = c;
-  if (!c.ready) {
+  if (c.mode === "free") {
     const b = $("#setup-warning");
-    b.textContent = "Falta configurar a chave da API do Claude no servidor (ANTHROPIC_API_KEY no arquivo .env). Sem ela a comparação não roda.";
+    b.classList.add("info");
+    b.innerHTML = "<strong>Modo gratuito.</strong> A comparação mede as cores, o logo (presença, cor e respiro) e as fontes, quando a arte é PDF. Composição e tom de voz só entram no modo com IA.";
     b.hidden = false;
+    $("#loading-hint").textContent = "Leva só alguns segundos.";
   }
 }).catch(() => {});
 
@@ -179,6 +181,7 @@ function render(r) {
     r.brand_name && `Marca: ${esc(r.brand_name)}`,
     `Arte: ${esc(r.art.name)}`,
     r.palette.adherence != null && `Paleta medida: ${r.palette.adherence}% nas cores oficiais`,
+    r.mode === "free" && "Modo gratuito",
   ].filter(Boolean).map((t) => `<span class="meta">${t}</span>`).join("");
 
   $("#previews").innerHTML = r.art.previews.map((src, i) =>

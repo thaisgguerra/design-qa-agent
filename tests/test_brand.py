@@ -103,3 +103,60 @@ def test_brand_check_contract_and_scoring():
     assert res["findings"][0]["art_index"] == 1
     assert [f["title"] for f in res["to_review"]] == ["Talvez a fonte"]
     assert res["palette"]["adherence"] == 100 and res["cost_usd"] > 0
+
+
+# --------------------------------------------------------------------------- free mode (no AI)
+def manual_pdf(logo):
+    """A tiny brand manual: color codes as text + the logo as a transparent image on two pages."""
+    import pymupdf
+    doc = pymupdf.open()
+    buf = io.BytesIO()
+    logo.save(buf, format="PNG")
+    for text in ("Cores\nVerde primário\nUso geral\n#4BD398\nR: 75\nRosa-Flori\nBotões\n#FB7082",
+                 "Espaço livre: X = um terço da largura do logotipo"):
+        page = doc.new_page()
+        page.insert_text((72, 72), text)
+        page.insert_image(pymupdf.Rect(300, 300, 500, 460), stream=buf.getvalue())
+    return doc.tobytes()
+
+
+def make_logo():
+    logo = Image.new("RGBA", (400, 320), (0, 0, 0, 0))
+    d = ImageDraw.Draw(logo)
+    d.ellipse([20, 20, 180, 180], outline="white", width=26)
+    d.rectangle([230, 20, 262, 300], fill="white")
+    d.polygon([(40, 300), (200, 220), (200, 300)], fill="white")
+    return logo
+
+
+def art_with_logo(logo, color, x, y, w, bg="#FB7082"):
+    art = Image.new("RGB", (1000, 1000), bg)
+    lg = logo.resize((w, round(w * logo.height / logo.width)))
+    solid = Image.new("RGBA", lg.size, color)
+    solid.putalpha(lg.getchannel("A"))
+    art.paste(solid, (x, y), solid)
+    return art
+
+
+def test_free_mode_reads_manual():
+    from designqa.brand_free import read_manual
+    prof = read_manual(from_bytes(manual_pdf(make_logo()), "Manual.pdf"))
+    assert [(p["name"], p["hex"]) for p in prof.palette] == [("Verde primário", "#4BD398"), ("Rosa-Flori", "#FB7082")]
+    assert prof.logo is not None and abs(prof.clearspace - 1 / 3) < 1e-6
+
+
+def test_free_mode_logo_and_clearspace():
+    from designqa.brand_free import FreeBrandChecker
+    from designqa.sources import Source
+    logo = make_logo()
+    brand = from_bytes(manual_pdf(logo), "Manual.pdf")
+    good = FreeBrandChecker().check(Source("ok", "upload", images=[art_with_logo(logo, "#4BD398", 350, 350, 300)]), brand)
+    assert good["categories"][0]["score"] == 100 and good["score"] >= 90 and not good["findings"]
+
+    bad = FreeBrandChecker().check(Source("bad", "upload", images=[art_with_logo(logo, "#1E40AF", 8, 8, 300)]), brand)
+    titles = [f["title"] for f in bad["findings"]]
+    assert "Logo sem a área de proteção" in titles and "Logo numa cor fora da paleta" in titles
+    assert bad["cost_usd"] == 0 and bad["mode"] == "free"
+
+    none = FreeBrandChecker().check(Source("empty", "upload", images=[Image.new("RGB", (800, 800), "#F8F695")]), brand)
+    assert not none["categories"][0]["applicable"] and none["to_review"]

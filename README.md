@@ -77,6 +77,8 @@ How it scores, in the same perceive / reason / verify shape as the screen agent:
 - **Reason.** Claude reads the brand manual as a native PDF (cached, since the same manual is reused across many pieces) plus the art images, and returns a per-criterion score and findings through a forced tool call. Criteria the manual does not cover are marked as not applicable, so they don't count.
 - **Verify.** The overall score is computed in code as a weighted mean of the applicable criteria (logo 25%, color 25%, typography 20%, composition 15%, graphic elements 10%, tone 5%), not by the model. The palette the model read from the manual is checked against the measured colors (CIE ΔE). Low-confidence findings go to a "to review" list.
 
+**Free mode (no API key).** Without `ANTHROPIC_API_KEY` the page still works and costs nothing: it only reports what can be measured. Colors: the official palette is read from the codes written in the manual (hex or RGB) and compared with the art's measured colors. Logo: the transparent logo image is taken from the manual, searched in the art with color-independent edge matching, confirmed by checking that the shape stands out from its background, and then its color and its distance to the edges are checked against the clearspace rule written in the manual (e.g. "um terço da largura"). Fonts: compared only when both files are PDFs with named fonts. Composition, graphic elements and tone of voice need the AI mode.
+
 Google Drive files must be shared as "Anyone with the link". Links are fetched server side, so URLs that resolve to private networks are refused.
 
 ## Evals

@@ -32,6 +32,8 @@ PRICES = {
 }
 
 ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
+if len(ANTHROPIC_API_KEY) < 30 or ANTHROPIC_API_KEY.endswith("..."):
+    ANTHROPIC_API_KEY = ""  # the placeholder from .env.example is not a key: run in free mode
 FIGMA_TOKEN = os.getenv("FIGMA_TOKEN", "")
 
 CLICKUP_TOKEN = os.getenv("CLICKUP_TOKEN", "")
