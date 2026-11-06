@@ -10,6 +10,9 @@ Examples
 
   # No AI at all (baseline for comparison / offline demo)
   python cli.py --design design.png --impl build.png --baseline
+
+  # No AI, but categorized findings with measured values (needs --figma and --url for spec + CSS)
+  python cli.py --figma <link> --url <page> --rules
 """
 from __future__ import annotations
 
@@ -22,6 +25,7 @@ from PIL import Image
 
 from designqa import config
 from designqa.analyze import BaselineAnalyzer, ClaudeAnalyzer, Finding
+from designqa.rules import RulesAnalyzer
 from designqa.capture import capture_url, export_figma_frame, fetch_figma_spec
 from designqa.pipeline import analyze_screen, save
 from designqa.trackers import get_tracker
@@ -61,6 +65,7 @@ def main() -> int:
     p.add_argument("--screen", default=None, help="Screen name used in tickets")
     p.add_argument("--out", type=Path, default=None, help="Output folder (default runs/<screen>)")
     p.add_argument("--baseline", action="store_true", help="Pixel diff only, no LLM")
+    p.add_argument("--rules", action="store_true", help="Measured values only (Figma spec vs CSS), no LLM, $0")
     p.add_argument("--model", default=None, help=f"Claude model (default {config.MODEL})")
     p.add_argument("--mask", nargs="*", default=[], help="CSS selectors with dynamic content to hide")
     p.add_argument("--ignore", default="", help="Plain-language note on dynamic content the model should ignore")
@@ -96,7 +101,8 @@ def main() -> int:
         (out / "dom.json").write_text(json.dumps(dom, indent=2, ensure_ascii=False))
         print(f"Page captured at {width}px ({len(dom)} elements measured)")
 
-    analyzer = BaselineAnalyzer() if a.baseline else ClaudeAnalyzer(model=a.model)
+    analyzer = (BaselineAnalyzer() if a.baseline else RulesAnalyzer() if a.rules
+                else ClaudeAnalyzer(model=a.model))
     result = analyze_screen(design_path, impl_path, analyzer, out, screen=screen, dom=dom, spec=spec,
                             dynamic_notes=a.ignore)
     fs = result["findings"]

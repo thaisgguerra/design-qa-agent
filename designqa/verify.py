@@ -26,6 +26,14 @@ def _median_color(img: Image.Image, box) -> np.ndarray:
     return np.median(crop, axis=0) if len(crop) else np.zeros(3)
 
 
+def _changed_share(design, impl, box, threshold: int = 24) -> float:
+    x, y, w, h = [max(0, int(v)) for v in box]
+    crop = (x, y, x + max(1, w), y + max(1, h))
+    a = np.asarray(design.crop(crop), dtype=np.int16)
+    b = np.asarray(impl.crop(crop), dtype=np.int16)
+    return float((np.abs(a - b).max(axis=-1) >= threshold).mean()) if a.size else 0.0
+
+
 def _check_color(f: Finding, design, impl) -> str | None:
     exp, act = HEX.search(f.expected or ""), HEX.search(f.actual or "")
     if not (exp and act):
@@ -33,7 +41,11 @@ def _check_color(f: Finding, design, impl) -> str | None:
     if exp.group(1).lower() == act.group(1).lower():
         return "contradicted: expected and actual colors are identical"
     diff = np.abs(_median_color(design, f.bbox) - _median_color(impl, f.bbox)).max()
-    return "color difference confirmed in pixels" if diff >= 6 else "weak: pixel colors look the same in this box"
+    # Thin text or several small elements barely move the median of a large box, so also accept
+    # the change when at least 1% of the pixels in the box clearly changed color.
+    share = _changed_share(design, impl, f.bbox)
+    ok = diff >= 6 or share >= 0.01
+    return "color difference confirmed in pixels" if ok else "weak: pixel colors look the same in this box"
 
 
 def verify(findings: list[Finding], regions: list[Region], design, impl,

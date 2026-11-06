@@ -51,6 +51,7 @@ Useful flags:
 | Flag | What it does |
 |---|---|
 | `--baseline` | Pixel diff only, no LLM (free, used as the comparison baseline) |
+| `--rules` | Measured values only (Figma spec vs computed CSS), no LLM, free |
 | `--model claude-opus-5-5` | Use the higher accuracy model |
 | `--mask ".timestamp" ".avatar"` | Hide dynamic elements on the live page before capture |
 | `--ignore "the chart data is live"` | Plain language note on what the model should ignore |
@@ -110,6 +111,39 @@ Baseline result (pixel diff, no AI) on the 24 cases:
 
 The baseline catches everything but produces 2.3 tickets per real bug, flags dynamic content, and never explains the problem. The agent's job is to keep recall high while fixing the other rows.
 
+### Rules analyzer (measured values, no LLM, $0)
+
+```bash
+python evals/run_evals.py --analyzer rules
+python evals/make_dataset.py --n 40 --clean 6 --seed 2026 --out evals/holdout   # fresh cases, not used to write the rules
+python evals/run_evals.py --analyzer rules --cases evals/holdout
+python evals/run_evals.py --analyzer rules --cases evals/holdout --perturb 3      # stress test
+```
+
+`designqa/rules.py` compares the Figma spec with the computed CSS element by element and turns each measured difference into a categorized finding with exact values (text -> content, font -> typography, padding/margin/gap -> spacing, radius or several paint props -> component, color/background -> color, unmatched elements -> missing/extra). Movement is measured relative to the element's container, so a cascade is reported once at its root. Dates and times that changed on both sides are treated as dynamic. Pixel regions no element explains (icons, SVG, borders) become low-confidence "unexplained" findings for human review.
+
+| Metric | Baseline (24 cases) | Rules (24 cases) | Baseline (holdout, 40) | Rules (holdout, 40) |
+|---|---|---|---|---|
+| Recall | 100% | 100% | 100% | 100% |
+| Precision | 66% | 100% | 38% | 100% |
+| Category accuracy | 0% | 90% | 0% | 88% |
+| Findings per real bug | 2.3 | 1.0 | 4.0 | 1.0 |
+| False positives per clean screen | 1.0 | 0 | 1.0 | 0 |
+| Cost per screen | $0 | $0 | $0 | $0 |
+
+The miss in category is always the same kind of bug: changes that leave no trace in the measured styles (an SVG logo recolored, a pseudo-element divider). They are still found, but as "unexplained" or "size changed". Those are exactly the regions worth sending to the LLM.
+
+**Read this before trusting the 100%.** In this synthetic set the spec and the DOM come from the same HTML, so elements match 1:1 and positions are exact. Real Figma layers do not map 1:1 to DOM nodes and rendering differs by a few pixels. `--perturb PX` mimics that by dropping CSS class names and jittering every DOM box by up to PX pixels:
+
+| DOM noise | Precision | Findings per bug | False positives per clean screen |
+|---|---|---|---|
+| 0 px | 100% | 1.0 | 0 |
+| 1 px | 98% | 1.1 | 0 |
+| 2 px | 62% | 1.9 | 0 |
+| 3 px | 14% | 11.3 | 19.5 |
+
+Rules are precise when matching is clean and collapse when it is not. The product conclusion: measured rules are the cheap first layer, and the LLM earns its cost on judgment (is this shift a bug or rendering noise, what is this unexplained region), not on reading values the spec already has.
+
 ## Tests
 
 ```bash
@@ -122,6 +156,7 @@ python -m pytest -q tests      # offline, the Claude client is mocked
 designqa/capture.py    Figma export + spec, Playwright capture + computed styles
 designqa/diff.py       alignment, pixel diff, changed regions, overlay
 designqa/analyze.py    Claude analyzer (prompt, tool schema, tiling) and pixel baseline
+designqa/rules.py      rules analyzer: spec vs computed CSS, cascades, no LLM
 designqa/verify.py     guardrails: evidence, color check, dedupe, confidence gate
 designqa/evidence.py   side by side evidence images
 designqa/trackers.py   ClickUp, Linear, markdown tickets
@@ -138,3 +173,4 @@ evals/                 dataset generator, answer key, scoring
 - Needs the design exported at the same width as the viewport. Responsive breakpoints mean one run per frame.
 - States (hover, error, empty, loading) require one capture per state.
 - Design tokens: comparing against token names (not only hex values) would make tickets more actionable.
+- Rules are brittle to imperfect element matching (see the stress test). Next step: a hybrid analyzer that runs the rules first and sends only unexplained or ambiguous regions to Claude, plus a tolerance learned from clean screens.

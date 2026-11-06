@@ -10,6 +10,7 @@ Metrics (per analyzer / model):
 
 Usage:
   python evals/run_evals.py --analyzer baseline
+  python evals/run_evals.py --analyzer rules          # measured values only, no LLM, $0
   python evals/run_evals.py --analyzer claude --model claude-sonnet-5-5
   python evals/run_evals.py --analyzer claude --model claude-opus-5-5 --limit 10
 """
@@ -17,6 +18,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import random
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -26,6 +28,7 @@ sys.path.insert(0, str(ROOT.parent))
 from designqa.analyze import BaselineAnalyzer, ClaudeAnalyzer  # noqa: E402
 from designqa.diff import overlaps  # noqa: E402
 from designqa.pipeline import analyze_screen  # noqa: E402
+from designqa.rules import RulesAnalyzer  # noqa: E402
 
 REPORTED = ("proposed", "needs_review")  # what a human would see
 
@@ -52,15 +55,20 @@ def score_case(truth, findings, statuses=REPORTED):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--analyzer", choices=["baseline", "claude"], default="baseline")
+    ap.add_argument("--analyzer", choices=["baseline", "rules", "claude"], default="baseline")
     ap.add_argument("--model", default=None)
     ap.add_argument("--cases", type=Path, default=ROOT / "cases")
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--no-context", action="store_true", help="ablation: hide DOM + spec from the model")
+    ap.add_argument("--perturb", type=int, default=0, metavar="PX",
+                    help="stress test: drop CSS class names and jitter DOM boxes by up to PX pixels, "
+                         "to mimic Figma layers that do not map 1:1 to DOM nodes")
     a = ap.parse_args()
 
-    analyzer = BaselineAnalyzer() if a.analyzer == "baseline" else ClaudeAnalyzer(model=a.model)
-    tag = f"{analyzer.name}-{analyzer.model}{'-nocontext' if a.no_context else ''}-{datetime.now():%Y%m%d-%H%M}"
+    analyzer = {"baseline": BaselineAnalyzer, "rules": RulesAnalyzer}.get(a.analyzer, lambda: ClaudeAnalyzer(model=a.model))()
+    tag = (f"{analyzer.name}-{analyzer.model}{'-nocontext' if a.no_context else ''}"
+           f"{f'-perturb{a.perturb}' if a.perturb else ''}-{a.cases.name}"
+           f"-{datetime.now():%Y%m%d-%H%M%S}")
     out_root = ROOT / "results" / tag
     cases = sorted(p for p in a.cases.iterdir() if p.is_dir())
     if a.limit:
@@ -70,6 +78,10 @@ def main():
     for c in cases:
         truth = json.loads((c / "truth.json").read_text())
         dom = None if a.no_context else json.loads((c / "dom.json").read_text())
+        if dom and a.perturb:
+            rng = random.Random(c.name)
+            dom = [dict(e, cls=None, bbox=[v + rng.randint(-a.perturb, a.perturb) for v in e["bbox"]])
+                   for e in dom]
         spec = None if a.no_context else json.loads((c / "spec.json").read_text())
         res = analyze_screen(c / "design.png", c / "impl.png", analyzer, out_root / c.name, screen=c.name,
                              dom=dom, spec=spec, dynamic_notes=truth["ignore_note"])
