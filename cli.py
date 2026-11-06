@@ -62,6 +62,8 @@ def main() -> int:
     impl = p.add_argument_group("implementation source (one of)")
     impl.add_argument("--url", help="URL of the implemented screen (captured with Playwright)")
     impl.add_argument("--impl", type=Path, help="Screenshot PNG of the implementation")
+    p.add_argument("--spec", type=Path, help="Figma spec JSON saved from an earlier run (use with --design)")
+    p.add_argument("--dom", type=Path, help="Computed styles JSON saved from an earlier run (use with --impl)")
     p.add_argument("--screen", default=None, help="Screen name used in tickets")
     p.add_argument("--out", type=Path, default=None, help="Output folder (default runs/<screen>)")
     p.add_argument("--baseline", action="store_true", help="Pixel diff only, no LLM")
@@ -82,7 +84,7 @@ def main() -> int:
     out = a.out or Path("runs") / slug
     out.mkdir(parents=True, exist_ok=True)
 
-    spec = None
+    spec = json.loads(a.spec.read_text()) if a.spec else None
     design_path = a.design
     if a.figma:
         if not config.FIGMA_TOKEN:
@@ -92,7 +94,7 @@ def main() -> int:
         (out / "figma_spec.json").write_text(json.dumps(spec, indent=2, ensure_ascii=False))
         print(f"Figma frame exported ({len(spec)} spec items)")
 
-    dom = None
+    dom = json.loads(a.dom.read_text()) if a.dom else None
     impl_path = a.impl
     if a.url:
         width = Image.open(design_path).width

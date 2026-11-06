@@ -1,0 +1,169 @@
+{
+  "screen": "Checkout",
+  "created_at": "2026-11-06 17:04",
+  "analyzer": "rules",
+  "model": "none",
+  "diff_ratio": 0.033894318181818185,
+  "regions": [
+    {
+      "id": 1,
+      "x": 35,
+      "y": 19,
+      "w": 95,
+      "h": 29,
+      "area": 764,
+      "intensity": 57.66361256544503
+    },
+    {
+      "id": 2,
+      "x": 231,
+      "y": 138,
+      "w": 49,
+      "h": 23,
+      "area": 117,
+      "intensity": 40.504273504273506
+    },
+    {
+      "id": 3,
+      "x": 47,
+      "y": 191,
+      "w": 188,
+      "h": 108,
+      "area": 6426,
+      "intensity": 101.08216619981326
+    },
+    {
+      "id": 4,
+      "x": 47,
+      "y": 306,
+      "w": 183,
+      "h": 72,
+      "area": 4082,
+      "intensity": 78.38461538461539
+    },
+    {
+      "id": 5,
+      "x": 47,
+      "y": 385,
+      "w": 83,
+      "h": 72,
+      "area": 1633,
+      "intensity": 78.59828536436008
+    },
+    {
+      "id": 6,
+      "x": 332,
+      "y": 385,
+      "w": 51,
+      "h": 72,
+      "area": 965,
+      "intensity": 76.64766839378238
+    },
+    {
+      "id": 7,
+      "x": 47,
+      "y": 464,
+      "w": 155,
+      "h": 74,
+      "area": 3865,
+      "intensity": 80.31901681759379
+    },
+    {
+      "id": 8,
+      "x": 755,
+      "y": 494,
+      "w": 285,
+      "h": 58,
+      "area": 11967,
+      "intensity": 30.76995069775215
+    }
+  ],
+  "findings": [
+    {
+      "title": "Color differs: button.btn-primary \"Pay now\"",
+      "category": "color",
+      "severity": "critical",
+      "element": "button.btn-primary \"Pay now\"",
+      "expected": "background #2563EB",
+      "actual": "background #3B82F6",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ],
+      "confidence": 0.9,
+      "rationale": "Measured: Figma spec vs computed CSS (rules).",
+      "region_ids": [],
+      "status": "approved",
+      "checks": [
+        "pixel evidence: regions [8]",
+        "color difference confirmed in pixels"
+      ],
+      "id": "DQA-001",
+      "evidence": "demo/run-rules/evidence/DQA-001.png",
+      "ticket": "demo/run-rules/tickets/DQA-001.md"
+    },
+    {
+      "title": "Spacing differs: section.card",
+      "category": "spacing",
+      "severity": "major",
+      "element": "section.card",
+      "expected": "padding 24px",
+      "actual": "padding 12px",
+      "bbox": [
+        40,
+        182,
+        581,
+        428
+      ],
+      "confidence": 0.9,
+      "rationale": "Measured: Figma spec vs computed CSS (rules).",
+      "region_ids": [],
+      "status": "approved",
+      "checks": [
+        "pixel evidence: regions [3, 4, 5, 6, 7]"
+      ],
+      "id": "DQA-002",
+      "evidence": "demo/run-rules/evidence/DQA-002.png",
+      "ticket": "demo/run-rules/tickets/DQA-002.md"
+    },
+    {
+      "title": "Unexplained visual change in region 1",
+      "category": "visual_diff",
+      "severity": "minor",
+      "element": "region 1",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        35,
+        19,
+        95,
+        29
+      ],
+      "confidence": 0.4,
+      "rationale": "764 changed pixels with no measured style difference (icon, image, border or pseudo element). Needs a human or an LLM.",
+      "region_ids": [
+        1
+      ],
+      "status": "needs_review",
+      "checks": [
+        "pixel evidence: regions [1]"
+      ],
+      "id": "DQA-003",
+      "evidence": "demo/run-rules/evidence/DQA-003.png"
+    }
+  ],
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "calls": 0,
+    "seconds": 0.0,
+    "cost_usd": 0.0
+  },
+  "artifacts": {
+    "overlay": "demo/run-rules/overlay.png",
+    "design": "demo/checkout/design.png",
+    "impl": "demo/checkout/impl.png"
+  }
+}

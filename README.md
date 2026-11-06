@@ -52,6 +52,7 @@ Useful flags:
 |---|---|
 | `--baseline` | Pixel diff only, no LLM (free, used as the comparison baseline) |
 | `--rules` | Measured values only (Figma spec vs computed CSS), no LLM, free |
+| `--spec` / `--dom` | Load saved Figma spec and computed styles JSON (to use `--rules` with `--design` / `--impl`) |
 | `--model claude-opus-5-5` | Use the higher accuracy model |
 | `--mask ".timestamp" ".avatar"` | Hide dynamic elements on the live page before capture |
 | `--ignore "the chart data is live"` | Plain language note on what the model should ignore |
@@ -59,6 +60,28 @@ Useful flags:
 | `--approve interactive/confident/all/none` | Which findings become tickets |
 
 Output lives in `runs/<screen>/`: `report.html`, `findings.json`, `evidence/*.png`, `tickets/`.
+
+## Demo (no API key, $0)
+
+`demo/checkout/` is one checkout screen with three injected bugs (CTA color, card padding, logo color) and a timestamp that changes on every load.
+
+```bash
+python cli.py --design demo/checkout/design.png --impl demo/checkout/impl.png \
+              --spec demo/checkout/spec.json --dom demo/checkout/dom.json \
+              --rules --screen "Checkout" --out demo/run-rules --approve confident
+python cli.py --design demo/checkout/design.png --impl demo/checkout/impl.png \
+              --baseline --screen "Checkout" --out demo/run-baseline --approve none
+```
+
+| | Pixel diff | Rules |
+|---|---|---|
+| Changed regions | 8 | 8 |
+| Findings | 8, all "visual difference" | 3: CTA color (critical), card padding, logo for review |
+| Timestamp | flagged | ignored as dynamic |
+| Card padding cascade | 5 separate alerts | 1 root cause, 24px vs 12px |
+| Tickets | none (nothing to say) | 2, with expected vs actual and evidence |
+
+Results are already in `demo/run-rules/` and `demo/run-baseline/` (open `report.html`). Rebuild the screen with `python evals/make_dataset.py --bugs cta_color,card_padding,logo_color --out demo` and move `demo/demo` to `demo/checkout`.
 
 ## Brand Check (web app)
 

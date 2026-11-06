@@ -102,7 +102,15 @@ def main():
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--width", type=int, default=1100)
     ap.add_argument("--out", type=Path, default=ROOT / "cases")
+    ap.add_argument("--bugs", default="", help="build ONE case named 'demo' with exactly these bug ids "
+                                               "(comma separated) plus the dynamic timestamp")
     a = ap.parse_args()
+    fixed = [m for m in MUTATIONS if m["id"] in a.bugs.split(",")] if a.bugs else None
+    if a.bugs:
+        unknown = set(a.bugs.split(",")) - {m["id"] for m in MUTATIONS}
+        if unknown:
+            ap.error(f"unknown bug ids: {sorted(unknown)}")
+        a.n, a.clean = 1, 0
 
     from playwright.sync_api import sync_playwright
     rng = random.Random(a.seed)
@@ -118,11 +126,11 @@ def main():
         design_dom = page.evaluate(DOM_JS, 250)
 
         for i in range(a.n):
-            cid = f"case_{i + 1:02d}"
+            cid = "demo" if fixed else f"case_{i + 1:02d}"
             d = a.out / cid
             d.mkdir(exist_ok=True)
-            muts = [] if i < a.clean else pick(rng, rng.choice([1, 1, 2, 2, 3]))
-            dynamic = i < a.clean or rng.random() < 0.3
+            muts = fixed if fixed else [] if i < a.clean else pick(rng, rng.choice([1, 1, 2, 2, 3]))
+            dynamic = bool(fixed) or i < a.clean or rng.random() < 0.3
 
             # design = untouched page
             page.set_content(html)

@@ -1,0 +1,42 @@
+{
+  "bugs": [
+    {
+      "id": "cta_color",
+      "category": "color",
+      "severity": "critical",
+      "desc": "Primary CTA blue #2563EB -> #3B82F6",
+      "bbox": [
+        760,
+        499,
+        275,
+        48
+      ]
+    },
+    {
+      "id": "card_padding",
+      "category": "spacing",
+      "severity": "major",
+      "desc": "Payment card padding 24px -> 12px",
+      "bbox": [
+        40,
+        182,
+        581,
+        428
+      ]
+    },
+    {
+      "id": "logo_color",
+      "category": "color",
+      "severity": "major",
+      "desc": "Logo color blue -> purple",
+      "bbox": [
+        40,
+        22,
+        85,
+        24
+      ]
+    }
+  ],
+  "dynamic_timestamp": true,
+  "ignore_note": "The 'Last updated' timestamp under the title is dynamic."
+}

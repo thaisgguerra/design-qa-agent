@@ -1,0 +1,295 @@
+{
+  "screen": "Checkout",
+  "created_at": "2026-11-06 17:04",
+  "analyzer": "pixel-diff-baseline",
+  "model": "none",
+  "diff_ratio": 0.033894318181818185,
+  "regions": [
+    {
+      "id": 1,
+      "x": 35,
+      "y": 19,
+      "w": 95,
+      "h": 29,
+      "area": 764,
+      "intensity": 57.66361256544503
+    },
+    {
+      "id": 2,
+      "x": 231,
+      "y": 138,
+      "w": 49,
+      "h": 23,
+      "area": 117,
+      "intensity": 40.504273504273506
+    },
+    {
+      "id": 3,
+      "x": 47,
+      "y": 191,
+      "w": 188,
+      "h": 108,
+      "area": 6426,
+      "intensity": 101.08216619981326
+    },
+    {
+      "id": 4,
+      "x": 47,
+      "y": 306,
+      "w": 183,
+      "h": 72,
+      "area": 4082,
+      "intensity": 78.38461538461539
+    },
+    {
+      "id": 5,
+      "x": 47,
+      "y": 385,
+      "w": 83,
+      "h": 72,
+      "area": 1633,
+      "intensity": 78.59828536436008
+    },
+    {
+      "id": 6,
+      "x": 332,
+      "y": 385,
+      "w": 51,
+      "h": 72,
+      "area": 965,
+      "intensity": 76.64766839378238
+    },
+    {
+      "id": 7,
+      "x": 47,
+      "y": 464,
+      "w": 155,
+      "h": 74,
+      "area": 3865,
+      "intensity": 80.31901681759379
+    },
+    {
+      "id": 8,
+      "x": 755,
+      "y": 494,
+      "w": 285,
+      "h": 58,
+      "area": 11967,
+      "intensity": 30.76995069775215
+    }
+  ],
+  "findings": [
+    {
+      "title": "Visual difference in region 3",
+      "category": "visual_diff",
+      "severity": "major",
+      "element": "region 3",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        47,
+        191,
+        188,
+        108
+      ],
+      "confidence": 0.5,
+      "rationale": "6426 changed pixels, mean intensity 101",
+      "region_ids": [
+        3
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [3]"
+      ],
+      "id": "DQA-001",
+      "evidence": "demo/run-baseline/evidence/DQA-001.png"
+    },
+    {
+      "title": "Visual difference in region 4",
+      "category": "visual_diff",
+      "severity": "major",
+      "element": "region 4",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        47,
+        306,
+        183,
+        72
+      ],
+      "confidence": 0.5,
+      "rationale": "4082 changed pixels, mean intensity 78",
+      "region_ids": [
+        4
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [4]"
+      ],
+      "id": "DQA-002",
+      "evidence": "demo/run-baseline/evidence/DQA-002.png"
+    },
+    {
+      "title": "Visual difference in region 7",
+      "category": "visual_diff",
+      "severity": "major",
+      "element": "region 7",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        47,
+        464,
+        155,
+        74
+      ],
+      "confidence": 0.5,
+      "rationale": "3865 changed pixels, mean intensity 80",
+      "region_ids": [
+        7
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [7]"
+      ],
+      "id": "DQA-003",
+      "evidence": "demo/run-baseline/evidence/DQA-003.png"
+    },
+    {
+      "title": "Visual difference in region 8",
+      "category": "visual_diff",
+      "severity": "major",
+      "element": "region 8",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        755,
+        494,
+        285,
+        58
+      ],
+      "confidence": 0.5,
+      "rationale": "11967 changed pixels, mean intensity 31",
+      "region_ids": [
+        8
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [8]"
+      ],
+      "id": "DQA-004",
+      "evidence": "demo/run-baseline/evidence/DQA-004.png"
+    },
+    {
+      "title": "Visual difference in region 1",
+      "category": "visual_diff",
+      "severity": "minor",
+      "element": "region 1",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        35,
+        19,
+        95,
+        29
+      ],
+      "confidence": 0.5,
+      "rationale": "764 changed pixels, mean intensity 58",
+      "region_ids": [
+        1
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [1]"
+      ],
+      "id": "DQA-005",
+      "evidence": "demo/run-baseline/evidence/DQA-005.png"
+    },
+    {
+      "title": "Visual difference in region 2",
+      "category": "visual_diff",
+      "severity": "minor",
+      "element": "region 2",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        231,
+        138,
+        49,
+        23
+      ],
+      "confidence": 0.5,
+      "rationale": "117 changed pixels, mean intensity 41",
+      "region_ids": [
+        2
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [2]"
+      ],
+      "id": "DQA-006",
+      "evidence": "demo/run-baseline/evidence/DQA-006.png"
+    },
+    {
+      "title": "Visual difference in region 5",
+      "category": "visual_diff",
+      "severity": "minor",
+      "element": "region 5",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        47,
+        385,
+        83,
+        72
+      ],
+      "confidence": 0.5,
+      "rationale": "1633 changed pixels, mean intensity 79",
+      "region_ids": [
+        5
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [5]"
+      ],
+      "id": "DQA-007",
+      "evidence": "demo/run-baseline/evidence/DQA-007.png"
+    },
+    {
+      "title": "Visual difference in region 6",
+      "category": "visual_diff",
+      "severity": "minor",
+      "element": "region 6",
+      "expected": "(see design)",
+      "actual": "(see implementation)",
+      "bbox": [
+        332,
+        385,
+        51,
+        72
+      ],
+      "confidence": 0.5,
+      "rationale": "965 changed pixels, mean intensity 77",
+      "region_ids": [
+        6
+      ],
+      "status": "proposed",
+      "checks": [
+        "pixel evidence: regions [6]"
+      ],
+      "id": "DQA-008",
+      "evidence": "demo/run-baseline/evidence/DQA-008.png"
+    }
+  ],
+  "usage": {
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "calls": 0,
+    "seconds": 0.0,
+    "cost_usd": 0.0
+  },
+  "artifacts": {
+    "overlay": "demo/run-baseline/overlay.png",
+    "design": "demo/checkout/design.png",
+    "impl": "demo/checkout/impl.png"
+  }
+}
