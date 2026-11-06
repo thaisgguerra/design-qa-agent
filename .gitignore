@@ -4,3 +4,4 @@ evals/results/
 __pycache__/
 .pytest_cache/
 .venv/
+evals/holdout/
