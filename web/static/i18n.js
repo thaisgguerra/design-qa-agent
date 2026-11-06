@@ -13,8 +13,9 @@ const I18N = (() => {
     pt: {
       lang_toggle: "EN", lang_toggle_flag: "flag-us.svg", lang_toggle_label: "Switch to English",
       title: "Flori Brand Check",
-      hero_title: "Essa arte condiz com a marca?",
-      hero_sub: "Envie a arte e o manual de marca do cliente. A gente confere logo, cores e tipografia e devolve uma nota com o que ajustar.",
+      hero_title_1: "Sua arte está", hero_title_2: "alinhada à marca?",
+      hero_sub: "Envie a arte e o manual de marca do cliente. Receba na hora uma análise de cores, tipografia e uso do logo, com o que ajustar.",
+      feat_colors: "Cores", feat_type: "Tipografia", feat_logo: "Logo", score_label: "Nota da marca",
       art_title: "A arte", art_sub: "O que foi produzido: post, banner, apresentação…",
       brand_title: "O manual de marca", brand_sub: "A identidade visual do cliente, de preferência em PDF.",
       seg_link: "Link", seg_file: "Arquivo",
@@ -112,8 +113,9 @@ const I18N = (() => {
     en: {
       lang_toggle: "PT", lang_toggle_flag: "flag-br.svg", lang_toggle_label: "Mudar para português",
       title: "Flori Brand Check",
-      hero_title: "Is this art on brand?",
-      hero_sub: "Upload the art and the client's brand guidelines. We check logo, colors and typography and give you a score with what to fix.",
+      hero_title_1: "Is your design", hero_title_2: "truly on brand?",
+      hero_sub: "Upload your artwork and the client's brand guidelines. Get an instant analysis of colors, typography and logo usage, with what to fix.",
+      feat_colors: "Colors", feat_type: "Typography", feat_logo: "Logo", score_label: "Brand Score",
       art_title: "The art", art_sub: "What was made: post, banner, presentation…",
       brand_title: "The brand guidelines", brand_sub: "The client's visual identity, ideally as a PDF.",
       seg_link: "Link", seg_file: "File",

@@ -23,7 +23,10 @@ function applyLanguage() {
   I18N.apply();
   document.title = t("title");
   const btn = $("#lang-btn");
-  btn.innerHTML = `<img src="${t("lang_toggle_flag")}" alt="" class="flag">${esc(t("lang_toggle"))}`;
+  // The button shows the current language (like a language menu); a click switches to the other one.
+  const cur = I18N.lang === "pt" ? { flag: "flag-br.svg", code: "PT" } : { flag: "flag-us.svg", code: "EN" };
+  btn.innerHTML = `<img src="${cur.flag}" alt="" class="flag">${cur.code}` +
+    `<svg class="chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   btn.setAttribute("aria-label", t("lang_toggle_label"));
   renderBanner();
   $$(".drop.has-file").forEach((d) => d.showFile && d.showFile());
@@ -44,7 +47,8 @@ function renderBanner() {
   if (!showBanner) return;
   const b = $("#setup-warning");
   b.classList.add("info");
-  b.innerHTML = t("banner_how") + (browserMode ? "<br>" + t("banner_browser") : "");
+  b.innerHTML = `<span class="banner-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1.1 2l.1.7h4.8l.1-.7c.1-.8.5-1.5 1.1-2A6 6 0 0 0 12 3z"/><path d="M12 0v1M3 3.5l.8.8M21 3.5l-.8.8M1 11h1M22 11h1"/></svg></span>` +
+    `<span>${t("banner_how")}${browserMode ? "<br>" + t("banner_browser") : ""}</span>`;
   b.hidden = false;
   $("#loading-hint").textContent = t("loading_fast");
   $("#loading-hint").removeAttribute("data-i18n");

@@ -13,43 +13,41 @@
 </head>
 <body>
   <header class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+      <svg class="hero-line" viewBox="0 0 600 300" preserveAspectRatio="none"><path d="M0 300 C 220 260, 420 150, 600 0"/></svg>
+    </div>
     <div class="wrap hero-inner">
       <div class="brandbar">
         <img src="logo-white.png" alt="Flori Tech" class="logo">
-        <span class="product-tag">Brand Check</span>
-        <button type="button" class="lang-btn" id="lang-btn" aria-label="Switch to English"><img src="flag-us.svg" alt="" class="flag">EN</button>
+        <span class="brandbar-sep" aria-hidden="true"></span>
+        <span class="product-tag">
+          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 2c.5 4.6 2.9 7.3 8 8-5.1.7-7.5 3.4-8 8-.5-4.6-2.9-7.3-8-8 5.1-.7 7.5-3.4 8-8z"/></svg>
+          Brand Check
+        </span>
+        <button type="button" class="lang-btn" id="lang-btn" aria-label="Switch to English"><img src="flag-br.svg" alt="" class="flag">PT</button>
       </div>
-      <div class="hero-copy">
-        <h1 data-i18n="hero_title">Essa arte condiz com a marca?</h1>
-        <p data-i18n="hero_sub">Envie a arte e o manual de marca do cliente. A gente confere logo, cores e tipografia e devolve uma nota com o que ajustar.</p>
-      </div>
-      <div class="machines" aria-hidden="true">
-        <span class="dot" style="--c:var(--green);--s:30px;left:26px;top:56px;animation-delay:-6.1s;animation-duration:6.6s"></span>
-        <span class="dot" style="--c:var(--pink);--s:26px;left:376px;top:51px;animation-delay:-3.3s;animation-duration:5.7s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:22px;left:383px;top:130px;animation-delay:-5.0s;animation-duration:7.5s"></span>
-        <span class="dot" style="--c:var(--pool);--s:20px;left:374px;top:259px;animation-delay:-1.8s;animation-duration:6.9s"></span>
-        <span class="dot" style="--c:var(--green);--s:18px;left:33px;top:174px;animation-delay:-6.4s;animation-duration:6.4s"></span>
-        <span class="dot" style="--c:var(--pink);--s:18px;left:73px;top:310px;animation-delay:-6.9s;animation-duration:7.3s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:16px;left:381px;top:94px;animation-delay:-1.9s;animation-duration:6.9s"></span>
-        <span class="dot" style="--c:var(--pool);--s:16px;left:376px;top:161px;animation-delay:-3.5s;animation-duration:5.3s"></span>
-        <span class="dot" style="--c:var(--green);--s:14px;left:379px;top:13px;animation-delay:-2.1s;animation-duration:7.2s"></span>
-        <span class="dot" style="--c:var(--pink);--s:14px;left:382px;top:212px;animation-delay:-5.1s;animation-duration:5.7s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:12px;left:26px;top:115px;animation-delay:-2.5s;animation-duration:8.8s"></span>
-        <span class="dot" style="--c:var(--pool);--s:12px;left:117px;top:315px;animation-delay:-3.8s;animation-duration:6.9s"></span>
-        <span class="dot" style="--c:var(--green);--s:12px;left:156px;top:-18px;animation-delay:-0.0s;animation-duration:5.4s"></span>
-        <span class="dot" style="--c:var(--pink);--s:10px;left:40px;top:214px;animation-delay:-3.6s;animation-duration:5.5s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:10px;left:373px;top:188px;animation-delay:-6.7s;animation-duration:6.4s"></span>
-        <span class="dot" style="--c:var(--pool);--s:10px;left:45px;top:245px;animation-delay:-6.1s;animation-duration:6.9s"></span>
-        <span class="dot" style="--c:var(--green);--s:8px;left:373px;top:294px;animation-delay:-0.2s;animation-duration:7.9s"></span>
-        <span class="dot" style="--c:var(--pink);--s:8px;left:110px;top:-10px;animation-delay:-5.5s;animation-duration:6.1s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:8px;left:26px;top:249px;animation-delay:-6.2s;animation-duration:5.3s"></span>
-        <span class="dot" style="--c:var(--pool);--s:6px;left:34px;top:273px;animation-delay:-4.2s;animation-duration:5.4s"></span>
-        <span class="dot" style="--c:var(--green);--s:6px;left:38px;top:24px;animation-delay:-3.6s;animation-duration:7.3s"></span>
-        <span class="dot" style="--c:var(--pink);--s:6px;left:395px;top:244px;animation-delay:-6.5s;animation-duration:7.8s"></span>
-        <span class="dot" style="--c:var(--yellow);--s:24px;left:24px;top:140px;animation-delay:-4.0s;animation-duration:7.8s"></span>
-        <span class="dot" style="--c:var(--pool);--s:14px;left:59px;top:-15px;animation-delay:-6.2s;animation-duration:7.5s"></span>
-        <img src="machine-wide.webp" alt="" class="machine m-wide">
-        <img src="machine-slim.webp" alt="" class="machine m-slim">
+
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1><span data-i18n="hero_title_1">Sua arte está</span><br><span class="hl" data-i18n="hero_title_2">alinhada à marca?</span></h1>
+          <p data-i18n="hero_sub">Envie a arte e o manual de marca do cliente. Receba na hora uma análise de cores, tipografia e uso do logo, com o que ajustar.</p>
+          <ul class="features">
+            <li><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.6-.8 1.6-1.6 0-.5-.2-.9-.5-1.2-.3-.3-.5-.7-.5-1.2 0-.9.7-1.6 1.6-1.6H16a5 5 0 0 0 5-5C21 6.4 17 3 12 3z"/><circle cx="7.5" cy="11" r="1.2" fill="currentColor"/><circle cx="10.5" cy="7" r="1.2" fill="currentColor"/><circle cx="15" cy="7.5" r="1.2" fill="currentColor"/></svg></span><span data-i18n="feat_colors">Cores</span></li>
+            <li><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19 9 5l5 14M5.8 14h6.4"/><path d="M15.5 12.5c.6-.9 1.4-1.3 2.5-1.3 1.6 0 2.5 1 2.5 2.4V19m0-3.4c-.6-.3-1.4-.5-2.3-.5-1.6 0-2.7.8-2.7 2 0 1.1.9 1.9 2.2 1.9 1.3 0 2.3-.7 2.8-1.6"/></svg></span><span data-i18n="feat_type">Tipografia</span></li>
+            <li><span class="feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="2"/><path d="m21 15-4.5-4.5L6 21"/></svg></span><span data-i18n="feat_logo">Logo</span></li>
+          </ul>
+        </div>
+
+        <div class="machines" aria-hidden="true">
+          <img src="machine-slim.webp" alt="" class="machine m-slim">
+          <img src="machine-wide.webp" alt="" class="machine m-wide">
+          <div class="score-card">
+            <span class="score-check"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></span>
+            <span><small data-i18n="score_label">Nota da marca</small><b>98%</b></span>
+            <svg class="score-spark" viewBox="0 0 40 40"><path d="M14 4v9M27 9l-6 6M36 21h-9"/></svg>
+          </div>
+        </div>
       </div>
     </div>
   </header>
