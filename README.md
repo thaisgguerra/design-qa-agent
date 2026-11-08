@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/c7b16191-d8f8-4f40-b03e-2cb96339163d
+
 # Design QA Agent
 
 An AI agent that compares an approved Figma frame with the implemented screen, finds every deviation (spacing, color, typography, components, layout, content), explains it in the language engineers use, and, after a human approves, opens tickets with side by side evidence.
